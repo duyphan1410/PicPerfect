@@ -1,0 +1,53 @@
+﻿@using PicPerfect.Models
+@model PicPerfect.Models.Users
+
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "_Layout";
+}
+
+@using (Html.BeginForm("SignUp", "SignUp", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Fullname)
+        @Html.TextBoxFor(model => model.Fullname, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Fullname, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email)
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Username)
+        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Password)
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ConfirmPassword)
+        @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Avatar)
+        @Html.TextBoxFor(model => model.Avatar, new { @class = "form-control", type = "file" ,name="Avatar"})
+        @Html.ValidationMessageFor(model => model.Avatar, "", new { @class = "text-danger" })
+    </div>
+
+
+    <div class="text-center">
+        <p>Already have an account? <a href="@Url.Action("Login", "Login")">Login</a></p>
+    </div>
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+}
