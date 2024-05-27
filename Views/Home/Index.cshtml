@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
+}
+
+<body>
+    <div class="container disable">
+        <h2>Image Editor</h2>
+        <div class="wrapper">
+            <div class="editor-panel">
+                <div class="filter">
+                    <label class="title">Filters</label>
+                    <div class="options">
+                        <button id="brightness" class="active">Brightness</button>
+                        <button id="saturation">Saturation</button>
+                        <button id="inversion">Inversion</button>
+                        <button id="grayscale">Grayscale</button>
+                    </div>
+                    <div class="slider">
+                        <div class="filter-info">
+                            <p class="name">Brighteness</p>
+                            <p class="value">100%</p>
+                        </div>
+                        <input type="range" value="100" min="0" max="200">
+                    </div>
+                </div>
+                <div class="rotate">
+                    <label class="title">Rotate & Flip</label>
+                    <div class="options">
+                        <button id="left"><i class="fa-solid fa-rotate-left"></i></button>
+                        <button id="right"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button id="horizontal"><i class='bx bx-reflect-vertical'></i></button>
+                        <button id="vertical"><i class='bx bx-reflect-horizontal'></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="preview-img">
+                <img src="~/img/image-placeholder.jpg" alt="preview-img">
+            </div>
+
+        </div>
+        <div class="controls">
+            <button class="reset-filter" style="color: #6C757D; border: 1px solid #6C757D;">
+                Reset Filters
+            </button>
+            <div>
+                <input type="file" class="file-input" accept="image/*" hidden>
+                <button class="choose-img" style="background: #6C757D; border: 1px solid #6C757D;">
+                    Choose Image
+                </button>
+                <button type="submit" class="save-img" style=" margin-left: 5px; background: #5372F0;border: 1px solid #5372F0">
+                    Save Image
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/script.js"></script> 
+</body>
+
+

@@ -1,0 +1,42 @@
+﻿@using PicPerfect.ViewModel
+@model RegisterVM
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "_Layout";
+}
+
+<form method="post" action="@Url.Action("SignUp", "SignUp")">
+    @Html.AntiForgeryToken()
+
+    <!-- Fullname input -->
+    <div class="form-outline mb-4">
+        <input type="text" id="fullname" name="fullname" class="form-control" />
+        <label class="form-label" for="fullname">Full Name</label>
+    </div>
+
+    <!-- Email input -->
+    <div class="form-outline mb-4">
+        <input type="email" id="email" name="email" class="form-control" />
+        <label class="form-label" for="email">Email</label>
+    </div>
+
+    <!-- Username input -->
+    <div class="form-outline mb-4">
+        <input type="text" id="username" name="username" class="form-control" />
+        <label class="form-label" for="username">Username</label>
+    </div>
+
+    <!-- Password input -->
+    <div class="form-outline mb-4">
+        <input type="password" id="password" name="password" class="form-control" />
+        <label class="form-label" for="password">Password</label>
+    </div>
+
+    <!-- Submit button -->
+    <button type="button" class="btn btn-primary btn-block mb-4">Sign Up</button>
+
+    <!-- Login link -->
+    <div class="text-center">
+        <p>Already have an account? <a href="@Url.Action("Login", "Login")">Login</a></p>
+    </div>
+</form>
