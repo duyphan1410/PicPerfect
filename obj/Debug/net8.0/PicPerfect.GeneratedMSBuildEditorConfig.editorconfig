@@ -17,123 +17,123 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = PicPerfect
 build_property.RootNamespace = PicPerfect
-build_property.ProjectDir = C:\Users\Admin\Desktop\DACN\PicPerfect\
+build_property.ProjectDir = D:\DHMT\PicPerfect\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\Admin\Desktop\DACN\PicPerfect
+build_property.MSBuildProjectDirectory = D:\DHMT\PicPerfect
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Account/Login.cshtml]
+[D:/DHMT/PicPerfect/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Account/Register.cshtml]
+[D:/DHMT/PicPerfect/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Admins/Create.cshtml]
+[D:/DHMT/PicPerfect/Views/Admins/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5zXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Admins/Delete.cshtml]
+[D:/DHMT/PicPerfect/Views/Admins/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5zXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Admins/Details.cshtml]
+[D:/DHMT/PicPerfect/Views/Admins/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5zXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Admins/Edit.cshtml]
+[D:/DHMT/PicPerfect/Views/Admins/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5zXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Admins/Index.cshtml]
+[D:/DHMT/PicPerfect/Views/Admins/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5zXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Albums/Create.cshtml]
+[D:/DHMT/PicPerfect/Views/Albums/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxidW1zXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Albums/Delete.cshtml]
+[D:/DHMT/PicPerfect/Views/Albums/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxidW1zXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Albums/Details.cshtml]
+[D:/DHMT/PicPerfect/Views/Albums/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxidW1zXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Albums/Edit.cshtml]
+[D:/DHMT/PicPerfect/Views/Albums/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxidW1zXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Albums/Index.cshtml]
+[D:/DHMT/PicPerfect/Views/Albums/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxidW1zXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Albums/Index1.cshtml]
+[D:/DHMT/PicPerfect/Views/Albums/Index1.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxidW1zXEluZGV4MS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Dashboard/Index.cshtml]
+[D:/DHMT/PicPerfect/Views/Dashboard/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/EditHistories/Create.cshtml]
+[D:/DHMT/PicPerfect/Views/EditHistories/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWRpdEhpc3Rvcmllc1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/EditHistories/Delete.cshtml]
+[D:/DHMT/PicPerfect/Views/EditHistories/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWRpdEhpc3Rvcmllc1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/EditHistories/Details.cshtml]
+[D:/DHMT/PicPerfect/Views/EditHistories/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWRpdEhpc3Rvcmllc1xEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/EditHistories/Edit.cshtml]
+[D:/DHMT/PicPerfect/Views/EditHistories/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWRpdEhpc3Rvcmllc1xFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/EditHistories/Index.cshtml]
+[D:/DHMT/PicPerfect/Views/EditHistories/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWRpdEhpc3Rvcmllc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Home/Index.cshtml]
+[D:/DHMT/PicPerfect/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Home/Privacy.cshtml]
+[D:/DHMT/PicPerfect/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Login/Login.cshtml]
+[D:/DHMT/PicPerfect/Views/Login/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5cTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Shared/Error.cshtml]
+[D:/DHMT/PicPerfect/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/DHMT/PicPerfect/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/SignUp/SignUp.cshtml]
+[D:/DHMT/PicPerfect/Views/SignUp/SignUp.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2lnblVwXFNpZ25VcC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/_ViewImports.cshtml]
+[D:/DHMT/PicPerfect/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/_ViewStart.cshtml]
+[D:/DHMT/PicPerfect/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/DACN/PicPerfect/Views/Shared/_Layout.cshtml]
+[D:/DHMT/PicPerfect/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-0zlkm98avk
