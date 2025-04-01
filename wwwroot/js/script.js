@@ -1,157 +1,228 @@
 ﻿const fileInput = document.querySelector(".file-input"),
-    filterOptions = document.querySelectorAll(".filter button"),
-    filterName = document.querySelector(".filter-info .name"),
-    filterValue = document.querySelector(".filter-info .value"),
-    filterSlider = document.querySelector(".slider input"),
-    rotateOptions = document.querySelectorAll(".rotate button"),
-    previewImg = document.querySelector(".preview-img img"),
-    resetFilterBtn = document.querySelector(".reset-filter"),
-    chooseImgBtn = document.querySelector(".choose-img"),
-    saveImgBtn = document.querySelector(".save-img");
+  filterOptions = document.querySelectorAll(".filter button"),
+  filterName = document.querySelector(".filter-info .name"),
+  filterValue = document.querySelector(".filter-info .value"),
+  filterSlider = document.querySelector(".slider input"),
+  rotateOptions = document.querySelectorAll(".rotate button"),
+  previewImg = document.querySelector(".preview-img img"),
+  resetFilterBtn = document.querySelector(".reset-filter"),
+  chooseImgBtn = document.querySelector(".choose-img"),
+  saveImgBtn = document.querySelector(".save-img"),
+  localImageInput = document.getElementById("localImageInput"),
+  savedImages = document.getElementById("savedImages");
 
-let brightness = "100", saturation = "100", inversion = "0", grayscale = "0";
-let rotate = 0, flipHorizontal = 1, flipVertical = 1;
+let brightness = 100,
+  saturation = 100,
+  inversion = 0,
+  grayscale = 0;
+let rotate = 0,
+  flipHorizontal = 1,
+  flipVertical = 1;
 
 const loadImage = () => {
-    let file = fileInput.files[0];
-    if (!file) return;
-    previewImg.src = URL.createObjectURL(file);
-    previewImg.addEventListener("load", () => {
-        resetFilterBtn.click();
-        document.querySelector(".container").classList.remove("disable");
-    });
-}
+  let file = fileInput.files[0];
+  if (!file) return;
+  previewImg.src = URL.createObjectURL(file);
+  previewImg.addEventListener("load", () => {
+    resetFilterBtn.click();
+    document.querySelector(".container").classList.remove("disable");
+  });
+};
 
 const applyFilter = () => {
-    previewImg.style.transform = `rotate(${rotate}deg) scale(${flipHorizontal}, ${flipVertical})`;
-    previewImg.style.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
-}
+  previewImg.style.transform = `rotate(${rotate}deg) scale(${flipHorizontal}, ${flipVertical})`;
+  previewImg.style.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+};
 
-filterOptions.forEach(option => {
-    option.addEventListener("click", () => {
-        document.querySelector(".active").classList.remove("active");
-        option.classList.add("active");
-        filterName.innerText = option.innerText;
+filterOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    document.querySelector(".filter .active").classList.remove("active");
+    option.classList.add("active");
+    filterName.innerText = option.innerText;
 
-        if (option.id === "brightness") {
-            filterSlider.max = "200";
-            filterSlider.value = brightness;
-            filterValue.innerText = `${brightness}%`;
-        } else if (option.id === "saturation") {
-            filterSlider.max = "200";
-            filterSlider.value = saturation;
-            filterValue.innerText = `${saturation}%`
-        } else if (option.id === "inversion") {
-            filterSlider.max = "100";
-            filterSlider.value = inversion;
-            filterValue.innerText = `${inversion}%`;
-        } else {
-            filterSlider.max = "100";
-            filterSlider.value = grayscale;
-            filterValue.innerText = `${grayscale}%`;
-        }
-    });
+    if (option.id === "brightness") {
+      filterSlider.max = "200";
+      filterSlider.value = brightness;
+      filterValue.innerText = `${brightness}%`;
+    } else if (option.id === "saturation") {
+      filterSlider.max = "200";
+      filterSlider.value = saturation;
+      filterValue.innerText = `${saturation}%`;
+    } else if (option.id === "inversion") {
+      filterSlider.max = "100";
+      filterSlider.value = inversion;
+      filterValue.innerText = `${inversion}%`;
+    } else {
+      filterSlider.max = "100";
+      filterSlider.value = grayscale;
+      filterValue.innerText = `${grayscale}%`;
+    }
+  });
 });
 
 const updateFilter = () => {
-    filterValue.innerText = `${filterSlider.value}%`;
-    const selectedFilter = document.querySelector(".filter .active");
+  filterValue.innerText = `${filterSlider.value}%`;
+  const selectedFilter = document.querySelector(".filter .active");
 
-    if (selectedFilter.id === "brightness") {
-        brightness = filterSlider.value;
-    } else if (selectedFilter.id === "saturation") {
-        saturation = filterSlider.value;
-    } else if (selectedFilter.id === "inversion") {
-        inversion = filterSlider.value;
+  if (selectedFilter.id === "brightness") {
+    brightness = filterSlider.value;
+  } else if (selectedFilter.id === "saturation") {
+    saturation = filterSlider.value;
+  } else if (selectedFilter.id === "inversion") {
+    inversion = filterSlider.value;
+  } else {
+    grayscale = filterSlider.value;
+  }
+  applyFilter();
+};
+
+rotateOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    if (option.id === "left") {
+      rotate -= 90;
+    } else if (option.id === "right") {
+      rotate += 90;
+    } else if (option.id === "horizontal") {
+      flipHorizontal = flipHorizontal === 1 ? -1 : 1;
     } else {
-        grayscale = filterSlider.value;
+      flipVertical = flipVertical === 1 ? -1 : 1;
     }
     applyFilter();
-}
-
-rotateOptions.forEach(option => {
-    option.addEventListener("click", () => {
-        if (option.id === "left") {
-            rotate -= 90;
-        } else if (option.id === "right") {
-            rotate += 90;
-        } else if (option.id === "horizontal") {
-            flipHorizontal = flipHorizontal === 1 ? -1 : 1;
-        } else {
-            flipVertical = flipVertical === 1 ? -1 : 1;
-        }
-        applyFilter();
-    });
+  });
 });
 
 const resetFilter = () => {
-    brightness = "100"; saturation = "100"; inversion = "0"; grayscale = "0";
-    rotate = 0; flipHorizontal = 1; flipVertical = 1;
-    filterOptions[0].click();
-    applyFilter();
-}
+  brightness = 100;
+  saturation = 100;
+  inversion = 0;
+  grayscale = 0;
+  rotate = 0;
+  flipHorizontal = 1;
+  flipVertical = 1;
+  filterOptions[0].click();
+  applyFilter();
+};
 
-document.querySelector('.save-img').addEventListener('click', async () => {
-    const username = '@HttpContext.Session.GetString("username")'; // Lấy giá trị của session username
-    if (username) {
-        // Người dùng đã đăng nhập, cho phép họ lưu hình ảnh
-        await saveImage();
-    } else {
-        // Người dùng chưa đăng nhập, chuyển hướng họ đến trang đăng nhập
-        window.location.href = '/Login';
+const loadSavedImages = async () => {
+  try {
+    const response = await fetch("/Home/GetUserImages");
+    const result = await response.json();
+
+    if (result.success) {
+      savedImages.innerHTML = result.images
+        .map(
+          (image) => `
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <img src="${image.imagePath}" class="card-img-top" alt="${image.imageName}" style="height: 150px; object-fit: cover;">
+            <div class="card-body">
+              <p class="card-text small">${image.imageName}</p>
+              <button class="btn btn-sm btn-primary select-saved-image" data-url="${image.imagePath}">
+                Chọn ảnh này
+              </button>
+            </div>
+          </div>
+        </div>
+      `
+        )
+        .join("");
+
+      document.querySelectorAll(".select-saved-image").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const imageUrl = btn.dataset.url;
+          previewImg.crossOrigin = "anonymous";
+          previewImg.src = imageUrl;
+          previewImg.onload = () => {
+            resetFilterBtn.click();
+            document.querySelector(".container").classList.remove("disable");
+            bootstrap.Modal.getInstance(
+              document.getElementById("imageModal")
+            ).hide();
+          };
+        });
+      });
     }
+  } catch (error) {
+    console.error("Error loading saved images:", error);
+  }
+};
+
+const handleLocalImageSelect = (file) => {
+  if (!file) return;
+  previewImg.crossOrigin = "anonymous";
+  previewImg.src = URL.createObjectURL(file);
+  previewImg.onload = () => {
+    resetFilterBtn.click();
+    document.querySelector(".container").classList.remove("disable");
+    bootstrap.Modal.getInstance(document.getElementById("imageModal")).hide();
+  };
+};
+
+chooseImgBtn.addEventListener("click", () => {
+  loadSavedImages();
+  const modal = new bootstrap.Modal(document.getElementById("imageModal"));
+  modal.show();
+});
+
+localImageInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    handleLocalImageSelect(file);
+  }
 });
 
 const saveImage = async () => {
-    try {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = previewImg.naturalWidth;
-        canvas.height = previewImg.naturalHeight;
+  try {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = previewImg.naturalWidth;
+    canvas.height = previewImg.naturalHeight;
 
-        // Áp dụng các bộ lọc và biến đổi vào hình ảnh
-        ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        if (rotate !== 0) {
-            ctx.rotate(rotate * Math.PI / 180);
-        }
-        ctx.scale(flipHorizontal, flipVertical);
-        ctx.drawImage(previewImg, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
-
-        // Tạo một đối tượng blob từ hình ảnh trên canvas
-        const blob = await new Promise(resolve => canvas.toBlob(resolve));
-        const formData = new FormData();
-        formData.append("file", blob, "image.jpg");
-
-        // Gửi yêu cầu POST lên endpoint /SaveImage
-        const response = await fetch("/SaveImage", {
-            method: "POST",
-            body: formData
-        });
-
-        // Tạo một liên kết để tải xuống hình ảnh đã chỉnh sửa
-        const link = document.createElement("a");
-        link.download = "image.jpg";
-        link.href = canvas.toDataURL();
-        link.click();
-
-        // Xử lý phản hồi từ máy chủ
-        if (response.ok) {
-            const message = await response.text();
-            console.log("Server response:", message);
-        } else {
-            console.error("Failed to save image:", response.statusText);
-        }
-    } catch (error) {
-        console.error("Error saving image:", error);
+    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    if (rotate !== 0) {
+      ctx.rotate((rotate * Math.PI) / 180);
     }
-}
+    ctx.scale(flipHorizontal, flipVertical);
+    ctx.drawImage(
+      previewImg,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    );
 
-filterSlider.addEventListener("input", updateFilter);
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.95)
+    );
+    const editedFile = new File([blob], "edited_image.jpg", {
+      type: "image/jpeg",
+    });
+
+    const formData = new FormData();
+    formData.append("file", editedFile);
+
+    const response = await fetch("/Home/UploadImage", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert(result.message);
+      loadSavedImages();
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    console.error("Error saving image:", error);
+    alert("Có lỗi xảy ra khi lưu ảnh");
+  }
+};
+
 resetFilterBtn.addEventListener("click", resetFilter);
+filterSlider.addEventListener("input", updateFilter);
 saveImgBtn.addEventListener("click", saveImage);
-fileInput.addEventListener("change", loadImage);
-chooseImgBtn.addEventListener("click", () => fileInput.click());
 
 //Drawing
 
@@ -185,8 +256,6 @@ chooseImgBtn.addEventListener("click", () => fileInput.click());
 //    setCanvasBackground();
 //});
 
-
-
 //const startDraw = (e) => {
 //    isDrawing = true;
 //    prevMouseX = e.offsetX; // passing current mouseX position as prevMouseX value
@@ -207,7 +276,7 @@ chooseImgBtn.addEventListener("click", () => fileInput.click());
 //        ctx.strokeStyle = selectedTool === "eraser" ? "#fff" : selectedColor;
 //        ctx.lineTo(e.offsetX, e.offsetY); // creating line according to the mouse pointer
 //        ctx.stroke(); // drawing/filling line with color
-//    } 
+//    }
 //}
 
 //toolBtns.forEach(btn => {
@@ -219,10 +288,10 @@ chooseImgBtn.addEventListener("click", () => fileInput.click());
 //    });
 //});
 
-//sizeSlider.addEventListener("change", () => brushWidth = sizeSlider.value); 
+//sizeSlider.addEventListener("change", () => brushWidth = sizeSlider.value);
 
 //colorBtns.forEach(btn => {
-//    btn.addEventListener("click", () => { 
+//    btn.addEventListener("click", () => {
 //        document.querySelector(".options .selected").classList.remove("selected");
 //        btn.classList.add("selected");
 //        selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color");
