@@ -1,56 +1,63 @@
 ﻿@model PicPerfect.Models.Album
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Tạo Album Mới";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container">
+    <h2>Tạo Album Mới</h2>
 
-<h4>Album</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AlbumName" class="control-label"></label>
-                <input asp-for="AlbumName" class="form-control" />
-                <span asp-validation-for="AlbumName" class="text-danger"></span>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="AlbumName">Tên Album</label>
+            <input asp-for="AlbumName" class="form-control" />
+            <span asp-validation-for="AlbumName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description">Mô tả</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Chọn ảnh bìa</label>
+            <div class="row">
+                @foreach (var image in ViewBag.UserImages)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <img src="@image.ImagePath" class="card-img-top" alt="@image.ImageName"
+                                style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input type="radio" name="CoverImage" value="@image.ImagePath" class="form-check-input"
+                                        id="cover_@image.ImageId">
+                                    <label class="form-check-label" for="cover_@image.ImageId">Chọn làm ảnh bìa</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreationDate" class="control-label"></label>
-                <input asp-for="CreationDate" class="form-control" />
-                <span asp-validation-for="CreationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatorUserId" class="control-label"></label>
-                <input asp-for="CreatorUserId" class="form-control" />
-                <span asp-validation-for="CreatorUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumberOfImage" class="control-label"></label>
-                <input asp-for="NumberOfImage" class="form-control" />
-                <span asp-validation-for="NumberOfImage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CoverImage" class="control-label"></label>
-                <input asp-for="CoverImage" class="form-control" />
-                <span asp-validation-for="CoverImage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+        </div>
+
+        <input type="hidden" asp-for="CreationDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        <input type="hidden" asp-for="CreatorUserId" value="@ViewBag.UserId" />
+        <input type="hidden" asp-for="NumberOfImage" value="100" />
+
+        <div class="form-group mt-3">
+            <input type="submit" value="Tạo Album" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </form>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

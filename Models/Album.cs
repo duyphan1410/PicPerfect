@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace PicPerfect.Models
 {
@@ -9,8 +10,9 @@ namespace PicPerfect.Models
         public string AlbumName { get; set; }
         public string Description { get; set; }
         public string CreationDate { get; set; }
-        public int CreatorUserId { get; set;}
-        public int NumberOfImage { get; set;}
+        public int CreatorUserId { get; set; }
+        public int NumberOfImage { get; set; }
         public string CoverImage { get; set; }
+        public virtual ICollection<AlbumImages> AlbumImages { get; set; }
     }
 }
