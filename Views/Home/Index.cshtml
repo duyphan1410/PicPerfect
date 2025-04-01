@@ -37,7 +37,6 @@
             <div class="preview-img">
                 <img src="~/img/image-placeholder.jpg" alt="preview-img">
             </div>
-
         </div>
         <div class="controls">
             <button class="reset-filter" style="color: #6C757D; border: 1px solid #6C757D;">
@@ -48,13 +47,41 @@
                 <button class="choose-img" style="background: #6C757D; border: 1px solid #6C757D;">
                     Choose Image
                 </button>
-                <button type="submit" class="save-img" style=" margin-left: 5px; background: #5372F0;border: 1px solid #5372F0">
+                <button type="submit" class="save-img"
+                    style="margin-left: 5px; background: #5372F0;border: 1px solid #5372F0">
                     Save Image
                 </button>
             </div>
         </div>
     </div>
-    <script src="~/js/script.js"></script> 
+
+    <!-- Modal hiển thị danh sách ảnh -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Chọn ảnh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Ảnh từ máy -->
+                        <div class="col-md-6">
+                            <h6>Chọn ảnh từ máy</h6>
+                            <input type="file" class="form-control" id="localImageInput" accept="image/*">
+                        </div>
+                        <!-- Ảnh đã lưu -->
+                        <div class="col-md-6">
+                            <h6>Ảnh đã lưu</h6>
+                            <div class="row" id="savedImages">
+                                <!-- Ảnh sẽ được thêm vào đây bằng JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/script.js"></script>
 </body>
-
-

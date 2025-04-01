@@ -61,9 +61,9 @@ void ConfigureCloudinary(WebApplicationBuilder builder)
 {
     // Thay thế 'YOUR_CLOUD_NAME', 'YOUR_API_KEY', và 'YOUR_API_SECRET' bằng thông tin tài khoản Cloudinary của bạn
     Account account = new Account(
-        "dwvt3snha",
-        "222353231937235",
-        "sb83WZRaSQheptlLB4bcR7QDI1I");
+        "dkpxtu0ur",
+        "617718861855797",
+        "OVNP1q0mBO2XPtnkW9Q7077CF8M");
 
     Cloudinary cloudinary = new Cloudinary(account);
 

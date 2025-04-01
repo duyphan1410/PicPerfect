@@ -10,23 +10,23 @@ using PicPerfect.Models;
 
 namespace PicPerfect.Controllers
 {
-    public class AlbumImagesController : Controller
+    public class AlbumImagessController : Controller
     {
         private readonly AppDbContext _context;
 
-        public AlbumImagesController(AppDbContext context)
+        public AlbumImagessController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: AlbumImages
+        // GET: AlbumImagess
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.AlbumImage.Include(a => a.Album).Include(a => a.Image);
+            var appDbContext = _context.AlbumImages.Include(a => a.Album).Include(a => a.Image);
             return View(await appDbContext.ToListAsync());
         }
 
-        // GET: AlbumImages/Details/5
+        // GET: AlbumImagess/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,19 +34,19 @@ namespace PicPerfect.Controllers
                 return NotFound();
             }
 
-            var albumImage = await _context.AlbumImage
+            var AlbumImages = await _context.AlbumImages
                 .Include(a => a.Album)
                 .Include(a => a.Image)
                 .FirstOrDefaultAsync(m => m.AlbumId == id);
-            if (albumImage == null)
+            if (AlbumImages == null)
             {
                 return NotFound();
             }
 
-            return View(albumImage);
+            return View(AlbumImages);
         }
 
-        // GET: AlbumImages/Create
+        // GET: AlbumImagess/Create
         public IActionResult Create()
         {
             ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId");
@@ -54,25 +54,25 @@ namespace PicPerfect.Controllers
             return View();
         }
 
-        // POST: AlbumImages/Create
+        // POST: AlbumImagess/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AlbumId,ImageId")] AlbumImage albumImage)
+        public async Task<IActionResult> Create([Bind("AlbumId,ImageId")] AlbumImages AlbumImages)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(albumImage);
+                _context.Add(AlbumImages);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId", albumImage.AlbumId);
-            ViewData["ImageId"] = new SelectList(_context.Images, "ImageId", "ImageId", albumImage.ImageId);
-            return View(albumImage);
+            ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId", AlbumImages.AlbumId);
+            ViewData["ImageId"] = new SelectList(_context.Images, "ImageId", "ImageId", AlbumImages.ImageId);
+            return View(AlbumImages);
         }
 
-        // GET: AlbumImages/Edit/5
+        // GET: AlbumImagess/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,24 +80,24 @@ namespace PicPerfect.Controllers
                 return NotFound();
             }
 
-            var albumImage = await _context.AlbumImage.FindAsync(id);
-            if (albumImage == null)
+            var AlbumImages = await _context.AlbumImages.FindAsync(id);
+            if (AlbumImages == null)
             {
                 return NotFound();
             }
-            ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId", albumImage.AlbumId);
-            ViewData["ImageId"] = new SelectList(_context.Images, "ImageId", "ImageId", albumImage.ImageId);
-            return View(albumImage);
+            ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId", AlbumImages.AlbumId);
+            ViewData["ImageId"] = new SelectList(_context.Images, "ImageId", "ImageId", AlbumImages.ImageId);
+            return View(AlbumImages);
         }
 
-        // POST: AlbumImages/Edit/5
+        // POST: AlbumImagess/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AlbumId,ImageId")] AlbumImage albumImage)
+        public async Task<IActionResult> Edit(int id, [Bind("AlbumId,ImageId")] AlbumImages AlbumImages)
         {
-            if (id != albumImage.AlbumId)
+            if (id != AlbumImages.AlbumId)
             {
                 return NotFound();
             }
@@ -106,12 +106,12 @@ namespace PicPerfect.Controllers
             {
                 try
                 {
-                    _context.Update(albumImage);
+                    _context.Update(AlbumImages);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AlbumImageExists(albumImage.AlbumId))
+                    if (!AlbumImagesExists(AlbumImages.AlbumId))
                     {
                         return NotFound();
                     }
@@ -122,12 +122,12 @@ namespace PicPerfect.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId", albumImage.AlbumId);
-            ViewData["ImageId"] = new SelectList(_context.Images, "ImageId", "ImageId", albumImage.ImageId);
-            return View(albumImage);
+            ViewData["AlbumId"] = new SelectList(_context.Album, "AlbumId", "AlbumId", AlbumImages.AlbumId);
+            ViewData["ImageId"] = new SelectList(_context.Images, "ImageId", "ImageId", AlbumImages.ImageId);
+            return View(AlbumImages);
         }
 
-        // GET: AlbumImages/Delete/5
+        // GET: AlbumImagess/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,36 +135,36 @@ namespace PicPerfect.Controllers
                 return NotFound();
             }
 
-            var albumImage = await _context.AlbumImage
+            var AlbumImages = await _context.AlbumImages
                 .Include(a => a.Album)
                 .Include(a => a.Image)
                 .FirstOrDefaultAsync(m => m.AlbumId == id);
-            if (albumImage == null)
+            if (AlbumImages == null)
             {
                 return NotFound();
             }
 
-            return View(albumImage);
+            return View(AlbumImages);
         }
 
-        // POST: AlbumImages/Delete/5
+        // POST: AlbumImagess/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var albumImage = await _context.AlbumImage.FindAsync(id);
-            if (albumImage != null)
+            var AlbumImages = await _context.AlbumImages.FindAsync(id);
+            if (AlbumImages != null)
             {
-                _context.AlbumImage.Remove(albumImage);
+                _context.AlbumImages.Remove(AlbumImages);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AlbumImageExists(int id)
+        private bool AlbumImagesExists(int id)
         {
-            return _context.AlbumImage.Any(e => e.AlbumId == id);
+            return _context.AlbumImages.Any(e => e.AlbumId == id);
         }
     }
 }
