@@ -47,12 +47,17 @@
                 <button class="choose-img" style="background: #6C757D; border: 1px solid #6C757D;">
                     Choose Image
                 </button>
-                <button type="submit" class="save-img"
-                    style="margin-left: 5px; background: #5372F0;border: 1px solid #5372F0">
+                <button type="submit" class="save-img btn btn-primary" style="margin-left: 5px;">
                     Save Image
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- Thêm overlay loading -->
+    <div class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Đang lưu ảnh...</div>
     </div>
 
     <!-- Modal hiển thị danh sách ảnh -->
@@ -83,5 +88,19 @@
         </div>
     </div>
 
-    <script src="~/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM fully loaded');
+            // Load script.js
+            var script = document.createElement('script');
+            script.src = '/js/script.js';
+            script.onload = function () {
+                console.log('script.js loaded successfully');
+            };
+            script.onerror = function () {
+                console.error('Error loading script.js');
+            };
+            document.body.appendChild(script);
+        });
+    </script>
 </body>

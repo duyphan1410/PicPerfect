@@ -1,216 +1,280 @@
 ﻿/* Import Google font - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-    display: flex;
-    padding: 10px;
-    min-height: 100vh;
-    align-items: center;
-    justify-content: center;
-    background: #E3F2FD;
+  display: flex;
+  padding: 10px;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: #e3f2fd;
 }
 
 .container {
-    width: 850px;
-    padding: 30px 35px 35px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  width: 850px;
+  padding: 30px 35px 35px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-    .container.disable .editor-panel,
-    .container.disable .controls .reset-filter,
-    .container.disable .controls .save-img {
-        opacity: 0.5;
-        pointer-events: none;
-    }
+.container.disable .editor-panel,
+.container.disable .controls .reset-filter,
+.container.disable .controls .save-img {
+  opacity: 0.5;
+  pointer-events: none;
+}
 
-    .container h2 {
-        margin-top: -8px;
-        font-size: 22px;
-        font-weight: 500;
-    }
+.container h2 {
+  margin-top: -8px;
+  font-size: 22px;
+  font-weight: 500;
+}
 
-    .container .wrapper {
-        display: flex;
-        margin: 20px 0;
-        min-height: 335px;
-    }
+.container .wrapper {
+  display: flex;
+  margin: 20px 0;
+  min-height: 335px;
+}
 
 .wrapper .editor-panel {
-    padding: 15px 20px;
-    width: 280px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+  padding: 15px 20px;
+  width: 280px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .editor-panel .title {
-    display: block;
-    font-size: 16px;
-    margin-bottom: 12px;
+  display: block;
+  font-size: 16px;
+  margin-bottom: 12px;
 }
 
-.editor-panel .options, .controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+.editor-panel .options,
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .editor-panel button {
-    outline: none;
-    height: 40px;
-    font-size: 14px;
-    color: #6C757D;
-    background: #fff;
-    border-radius: 3px;
-    margin-bottom: 8px;
-    border: 1px solid #aaa;
+  outline: none;
+  height: 40px;
+  font-size: 14px;
+  color: #6c757d;
+  background: #fff;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  border: 1px solid #aaa;
 }
 
 .editor-panel .filter button {
-    width: calc(100% / 2 - 4px);
+  width: calc(100% / 2 - 4px);
 }
 
 .editor-panel button:hover {
-    background: #f5f5f5;
+  background: #f5f5f5;
 }
 
 .filter button.active {
-    color: #fff;
-    border-color: #5372F0;
-    background: #5372F0;
+  color: #fff;
+  border-color: #5372f0;
+  background: #5372f0;
 }
 
 .filter .slider {
-    margin-top: 12px;
+  margin-top: 12px;
 }
 
-    .filter .slider .filter-info {
-        display: flex;
-        color: #464646;
-        font-size: 14px;
-        justify-content: space-between;
-    }
+.filter .slider .filter-info {
+  display: flex;
+  color: #464646;
+  font-size: 14px;
+  justify-content: space-between;
+}
 
-    .filter .slider input {
-        width: 100%;
-        height: 5px;
-        accent-color: #5372F0;
-    }
+.filter .slider input {
+  width: 100%;
+  height: 5px;
+  accent-color: #5372f0;
+}
 
 .editor-panel .rotate {
-    margin-top: 17px;
+  margin-top: 17px;
 }
 
-    .editor-panel .rotate button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: calc(100% / 4 - 3px);
-    }
+.editor-panel .rotate button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% / 4 - 3px);
+}
 
 .rotate .options button:nth-child(3),
 .rotate .options button:nth-child(4) {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 .rotate .options button:active {
-    color: #fff;
-    background: #5372F0;
-    border-color: #5372F0;
+  color: #fff;
+  background: #5372f0;
+  border-color: #5372f0;
 }
 
 .wrapper .preview-img {
-    flex-grow: 1;
-    display: flex;
-    overflow: hidden;
-    margin-left: 20px;
-    margin-right: 20px;
-    border-radius: 5px;
-    align-items: center;
-    justify-content: center;
+  flex-grow: 1;
+  display: flex;
+  overflow: hidden;
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
 }
 
 .preview-img img {
-    max-width: 490px;
-    max-height: 335px;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  max-width: 490px;
+  max-height: 335px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .controls button {
-    padding: 11px 20px;
-    font-size: 14px;
-    border-radius: 3px;
-    outline: none;
-    color: #fff;
-    cursor: pointer;
-    background: none;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
+  padding: 11px 20px;
+  font-size: 14px;
+  border-radius: 3px;
+  outline: none;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
 }
 
 .controls .reset-filter {
-    color: #6C757D;
-    border: 1px solid #6C757D;
+  color: #6c757d;
+  border: 1px solid #6c757d;
 }
 
-    .controls .reset-filter:hover {
-        color: #fff;
-        background: #6C757D;
-    }
+.controls .reset-filter:hover {
+  color: #fff;
+  background: #6c757d;
+}
 
 .controls .choose-img {
-    background: #6C757D;
-    border: 1px solid #6C757D;
+  background: #6c757d;
+  border: 1px solid #6c757d;
 }
 
 .controls .save-img {
-    margin-left: 5px;
-    background: #5372F0;
-    border: 1px solid #5372F0;
+  margin-left: 5px;
+  background: #5372f0;
+  border: 1px solid #5372f0;
+}
+
+.save-img.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.save-img.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-right-color: transparent;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media screen and (max-width: 760px) {
-    .container {
-        padding: 25px;
-    }
+  .container {
+    padding: 25px;
+  }
 
-        .container .wrapper {
-            flex-wrap: wrap-reverse;
-        }
+  .container .wrapper {
+    flex-wrap: wrap-reverse;
+  }
 
-    .wrapper .editor-panel {
-        width: 100%;
-    }
+  .wrapper .editor-panel {
+    width: 100%;
+  }
 
-    .wrapper .preview-img {
-        width: 100%;
-        margin: 0 0 15px;
-    }
+  .wrapper .preview-img {
+    width: 100%;
+    margin: 0 0 15px;
+  }
 }
 
 @media screen and (max-width: 500px) {
-    .controls button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+  .controls button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 
-    .controls .row {
-        width: 100%;
-    }
+  .controls .row {
+    width: 100%;
+  }
 
-        .controls .row .save-img {
-            margin-left: 0px;
-        }
+  .controls .row .save-img {
+    margin-left: 0px;
+  }
 }
 
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5372f0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: white;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
