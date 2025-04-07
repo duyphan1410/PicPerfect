@@ -23,6 +23,7 @@ namespace PicPerfect.Controllers
         public async Task<IActionResult> Index()
         {
             string username = HttpContext.Session.GetString("username");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(username));
             if (username != null)
             {
                 ViewBag.Username = username;
@@ -32,20 +33,28 @@ namespace PicPerfect.Controllers
                     .Where(u => u.Username == username)
                     .Select(u => u.UserId)
                     .FirstOrDefaultAsync();
-                if (userId != null)
-                {
-                    // Filter images based on the user ID
-                    IEnumerable<Images> userImages = _context.Images
-                        .Where(img => img.UserId == userId)
-                        .ToList();
 
-                    return View(userImages);
+                if (userId != 0)
+                {
+                    // Get albums created by the user
+                    var userAlbums = await _context.Album
+                        .Where(a => a.CreatorUserId == userId)
+                        .ToListAsync();
+
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(userAlbums));
+                    // Get album images for each album
+                    foreach (var album in userAlbums)
+                    {
+                        album.AlbumImages = await _context.AlbumImages
+                            .Where(ai => ai.AlbumId == album.AlbumId)
+                            .Include(ai => ai.Image)
+                            .ToListAsync();
+                    }
+
+                    return View(userAlbums.ToList());
                 }
-                // If user ID is not found, return a default view
-                return View(new List<Images>());
             }
-            // If HttpContext is null or username is not found, return a default view
-            return View(await _context.Album.ToListAsync());
+            return RedirectToAction("Login", "Login");
         }
 
 
@@ -70,9 +79,22 @@ namespace PicPerfect.Controllers
         // GET: Albums/Create
         public IActionResult Create()
         {
-            HttpContext.Session.GetString("username");
-            ViewBag.FullName = HttpContext.Session.GetString("username");
-            return View();
+            string username = HttpContext.Session.GetString("username");
+            if (username != null)
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Username == username);
+                if (user != null)
+                {
+                    ViewBag.UserId = user.UserId;
+                    // Lấy danh sách ảnh của user
+                    var userImages = _context.Images
+                        .Where(i => i.UserId == user.UserId)
+                        .ToList();
+                    ViewBag.UserImages = userImages;
+                    return View();
+                }
+            }
+            return RedirectToAction("Login", "Login");
         }
 
         // POST: Albums/Create
@@ -84,9 +106,24 @@ namespace PicPerfect.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(album);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(album);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi tạo album: " + ex.Message);
+                }
+            }
+            // Nếu có lỗi, lấy lại danh sách ảnh
+            var user = _context.Users.FirstOrDefault(u => u.UserId == album.CreatorUserId);
+            if (user != null)
+            {
+                ViewBag.UserImages = _context.Images
+                    .Where(i => i.UserId == user.UserId)
+                    .ToList();
             }
             return View(album);
         }
