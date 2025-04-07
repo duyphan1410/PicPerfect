@@ -14,7 +14,7 @@ namespace PicPerfect.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
 
             modelBuilder.Entity("PicPerfect.Models.Admins", b =>
                 {
@@ -71,21 +71,19 @@ namespace PicPerfect.Migrations
                     b.ToTable("Album");
                 });
 
-            modelBuilder.Entity("PicPerfect.Models.AlbumImage", b =>
+            modelBuilder.Entity("PicPerfect.Models.AlbumImages", b =>
                 {
                     b.Property<int>("AlbumId")
-                        .HasColumnType("INTEGER")
-                        .HasColumnOrder(0);
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ImageId")
-                        .HasColumnType("INTEGER")
-                        .HasColumnOrder(1);
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("AlbumId", "ImageId");
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("AlbumImage");
+                    b.ToTable("AlbumImages");
                 });
 
             modelBuilder.Entity("PicPerfect.Models.EditHistory", b =>
@@ -116,10 +114,6 @@ namespace PicPerfect.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ImageName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -143,11 +137,9 @@ namespace PicPerfect.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ReportConten")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReportTime")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
@@ -168,15 +160,12 @@ namespace PicPerfect.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Avatar")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Fullname")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
@@ -185,6 +174,7 @@ namespace PicPerfect.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.HasKey("UserId");
@@ -192,10 +182,10 @@ namespace PicPerfect.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PicPerfect.Models.AlbumImage", b =>
+            modelBuilder.Entity("PicPerfect.Models.AlbumImages", b =>
                 {
                     b.HasOne("PicPerfect.Models.Album", "Album")
-                        .WithMany()
+                        .WithMany("AlbumImages")
                         .HasForeignKey("AlbumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -209,6 +199,11 @@ namespace PicPerfect.Migrations
                     b.Navigation("Album");
 
                     b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("PicPerfect.Models.Album", b =>
+                {
+                    b.Navigation("AlbumImages");
                 });
 #pragma warning restore 612, 618
         }

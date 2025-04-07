@@ -14,10 +14,10 @@
         public DbSet<Admins> Admins { get; set; }
         public DbSet<Reports> Reports { get; set; }
         public DbSet<EditHistory> EditHistory { get; set; }
-        public DbSet<AlbumImage> AlbumImage { get; set;}
+        public DbSet<AlbumImages> AlbumImages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AlbumImage>()
+            modelBuilder.Entity<AlbumImages>()
           .HasKey(m => new { m.AlbumId, m.ImageId });
         }
 

@@ -12,6 +12,7 @@
           "Microsoft.AspNet.SessionState.SessionStateModule": "2.0.0",
           "Microsoft.AspNetCore.Http": "2.2.2",
           "Microsoft.EntityFrameworkCore": "8.0.4",
+          "Microsoft.EntityFrameworkCore.Design": "8.0.4",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.3",
           "Microsoft.EntityFrameworkCore.Sqlite.Core": "8.0.4",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.4",
