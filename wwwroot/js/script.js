@@ -172,6 +172,10 @@ localImageInput.addEventListener("change", (e) => {
 });
 
 const saveImage = async () => {
+  // Hiển thị overlay loading
+  const loadingOverlay = document.querySelector(".loading-overlay");
+  loadingOverlay.style.display = "flex";
+
   try {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -217,12 +221,26 @@ const saveImage = async () => {
   } catch (error) {
     console.error("Error saving image:", error);
     alert("Có lỗi xảy ra khi lưu ảnh");
+  } finally {
+    // Ẩn overlay loading
+    loadingOverlay.style.display = "none";
   }
 };
 
 resetFilterBtn.addEventListener("click", resetFilter);
 filterSlider.addEventListener("input", updateFilter);
-saveImgBtn.addEventListener("click", saveImage);
+
+console.log("Adding click event listener to save button");
+console.log("Save button element:", saveImgBtn);
+
+if (saveImgBtn) {
+  saveImgBtn.addEventListener("click", () => {
+    console.log("Save button clicked");
+    saveImage();
+  });
+} else {
+  console.error("Save button not found in DOM");
+}
 
 //Drawing
 
@@ -262,7 +280,6 @@ saveImgBtn.addEventListener("click", saveImage);
 //    prevMouseY = e.offsetY; // passing current mouseY position as prevMouseY value
 //    ctx.beginPath(); // creating new path to draw
 //    ctx.lineWidth = brushWidth; // passing brushSize as line width
-//    ctx.strokeStyle = selectedColor; // passing selectedColor as stroke style
 //    ctx.fillStyle = selectedColor; // passing selectedColor as fill style
 //    // copying canvas data & passing as snapshot value.. this avoids dragging the image
 //    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
