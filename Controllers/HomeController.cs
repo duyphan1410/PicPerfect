@@ -161,6 +161,77 @@ namespace PicPerfect.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateImage(IFormFile file, string imageId)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return Json(new { success = false, message = "Không có file nào được chọn" });
+                }
+
+                // Kiểm tra định dạng file
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return Json(new { success = false, message = "Định dạng file không được hỗ trợ" });
+                }
+
+                // Lấy thông tin ảnh cũ từ database
+                var username = HttpContext.Session.GetString("username");
+                if (string.IsNullOrEmpty(username))
+                {
+                    return Json(new { success = false, message = "Vui lòng đăng nhập để cập nhật ảnh" });
+                }
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy thông tin người dùng" });
+                }
+
+                // Lấy ảnh cần cập nhật
+                var existingImage = await _context.Images.FirstOrDefaultAsync(i =>
+                    i.ImageId.ToString() == imageId && i.UserId == user.UserId);
+
+                if (existingImage == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy ảnh cần cập nhật" });
+                }
+
+                // Lấy public_id từ URL cũ
+                var uri = new Uri(existingImage.ImagePath);
+                var publicId = Path.GetFileNameWithoutExtension(uri.LocalPath);
+
+                // Upload ảnh mới với public_id cũ
+                var uploadResult = await _photoServices.UpdatePhotoAsync(file, publicId);
+
+                if (uploadResult.Error != null)
+                {
+                    return Json(new { success = false, message = uploadResult.Error.Message });
+                }
+
+                // Cập nhật URL mới trong database
+                existingImage.ImagePath = uploadResult.SecureUrl.ToString();
+                existingImage.UploadDatetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                await _context.SaveChangesAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Cập nhật ảnh thành công",
+                    imageUrl = uploadResult.SecureUrl.ToString()
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật ảnh");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật ảnh" });
+            }
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
