@@ -172,6 +172,12 @@ localImageInput.addEventListener("change", (e) => {
 });
 
 const saveImage = async () => {
+  // Kiểm tra xem đã có ảnh được chọn chưa
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước khi lưu!");
+    return;
+  }
+
   // Hiển thị overlay loading
   const loadingOverlay = document.querySelector(".loading-overlay");
   loadingOverlay.style.display = "flex";
@@ -222,7 +228,6 @@ const saveImage = async () => {
     console.error("Error saving image:", error);
     alert("Có lỗi xảy ra khi lưu ảnh");
   } finally {
-    // Ẩn overlay loading
     loadingOverlay.style.display = "none";
   }
 };
@@ -233,14 +238,32 @@ filterSlider.addEventListener("input", updateFilter);
 console.log("Adding click event listener to save button");
 console.log("Save button element:", saveImgBtn);
 
-if (saveImgBtn) {
-  saveImgBtn.addEventListener("click", () => {
-    console.log("Save button clicked");
-    saveImage();
-  });
-} else {
-  console.error("Save button not found in DOM");
-}
+// Cập nhật event listener cho nút save
+document.querySelector(".save-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  saveImage();
+});
+
+// Chuẩn bị cho các chức năng sắp tới
+document.querySelector(".update-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước!");
+    return;
+  }
+  // Sẽ thêm chức năng sau
+  console.log("Update image clicked");
+});
+
+document.querySelector(".download-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước!");
+    return;
+  }
+  // Sẽ thêm chức năng sau
+  console.log("Download image clicked");
+});
 
 //Drawing
 
