@@ -92,5 +92,41 @@ namespace PicPerfect.Services
             }
             return deletionResult;
         }
+
+        public async Task<ImageUploadResult> UpdatePhotoAsync(IFormFile file, string publicId)
+        {
+            var uploadResult = new ImageUploadResult();
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    throw new ArgumentException("Không có file nào được chọn");
+                }
+
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        PublicId = publicId,
+                        Overwrite = true,
+                        UseFilename = true
+                    };
+
+                    uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+                    if (uploadResult.Error != null)
+                    {
+                        throw new Exception($"Lỗi khi upload lên Cloudinary: {uploadResult.Error.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating photo: {ex.Message}");
+                throw;
+            }
+            return uploadResult;
+        }
     }
 }

@@ -19,6 +19,9 @@ let rotate = 0,
   flipHorizontal = 1,
   flipVertical = 1;
 
+// Biến để lưu trữ ID ảnh hiện tại
+let currentImageId = null;
+
 const loadImage = () => {
   let file = fileInput.files[0];
   if (!file) return;
@@ -117,7 +120,9 @@ const loadSavedImages = async () => {
             <img src="${image.imagePath}" class="card-img-top" alt="${image.imageName}" style="height: 150px; object-fit: cover;">
             <div class="card-body">
               <p class="card-text small">${image.imageName}</p>
-              <button class="btn btn-sm btn-primary select-saved-image" data-url="${image.imagePath}">
+              <button class="btn btn-sm btn-primary select-saved-image" 
+                data-url="${image.imagePath}"
+                data-id="${image.imageId}">
                 Chọn ảnh này
               </button>
             </div>
@@ -130,6 +135,7 @@ const loadSavedImages = async () => {
       document.querySelectorAll(".select-saved-image").forEach((btn) => {
         btn.addEventListener("click", () => {
           const imageUrl = btn.dataset.url;
+          currentImageId = btn.dataset.id; // Lưu ID ảnh
           previewImg.crossOrigin = "anonymous";
           previewImg.src = imageUrl;
           previewImg.onload = () => {
@@ -172,6 +178,12 @@ localImageInput.addEventListener("change", (e) => {
 });
 
 const saveImage = async () => {
+  // Kiểm tra xem đã có ảnh được chọn chưa
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước khi lưu!");
+    return;
+  }
+
   // Hiển thị overlay loading
   const loadingOverlay = document.querySelector(".loading-overlay");
   loadingOverlay.style.display = "flex";
@@ -222,7 +234,6 @@ const saveImage = async () => {
     console.error("Error saving image:", error);
     alert("Có lỗi xảy ra khi lưu ảnh");
   } finally {
-    // Ẩn overlay loading
     loadingOverlay.style.display = "none";
   }
 };
@@ -233,14 +244,135 @@ filterSlider.addEventListener("input", updateFilter);
 console.log("Adding click event listener to save button");
 console.log("Save button element:", saveImgBtn);
 
-if (saveImgBtn) {
-  saveImgBtn.addEventListener("click", () => {
-    console.log("Save button clicked");
-    saveImage();
-  });
-} else {
-  console.error("Save button not found in DOM");
-}
+// Cập nhật event listener cho nút save
+document.querySelector(".save-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  saveImage();
+});
+
+// Thêm hàm updateImage
+const updateImage = async () => {
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước khi cập nhật!");
+    return;
+  }
+
+  if (!currentImageId) {
+    alert("Vui lòng chọn một ảnh đã lưu để cập nhật!");
+    return;
+  }
+
+  const loadingOverlay = document.querySelector(".loading-overlay");
+  loadingOverlay.style.display = "flex";
+
+  try {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = previewImg.naturalWidth;
+    canvas.height = previewImg.naturalHeight;
+
+    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    if (rotate !== 0) {
+      ctx.rotate((rotate * Math.PI) / 180);
+    }
+    ctx.scale(flipHorizontal, flipVertical);
+    ctx.drawImage(
+      previewImg,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    );
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.95)
+    );
+    const editedFile = new File([blob], "edited_image.jpg", {
+      type: "image/jpeg",
+    });
+
+    const formData = new FormData();
+    formData.append("file", editedFile);
+    formData.append("imageId", currentImageId);
+
+    const response = await fetch("/Home/UpdateImage", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert(result.message);
+      loadSavedImages();
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    console.error("Error updating image:", error);
+    alert("Có lỗi xảy ra khi cập nhật ảnh");
+  } finally {
+    loadingOverlay.style.display = "none";
+  }
+};
+
+// Cập nhật event listener cho nút update
+document.querySelector(".update-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  updateImage();
+});
+
+document.querySelector(".download-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước!");
+    return;
+  }
+  downloadImage();
+  // Sẽ thêm chức năng sau
+  console.log("Download image clicked");
+});
+
+// Thêm hàm downloadImage
+const downloadImage = () => {
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước khi tải xuống!");
+    return;
+  }
+
+  // Tạo canvas với ảnh đã chỉnh sửa
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = previewImg.naturalWidth;
+  canvas.height = previewImg.naturalHeight;
+
+  // Áp dụng các hiệu ứng đã chỉnh sửa
+  ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  if (rotate !== 0) {
+    ctx.rotate((rotate * Math.PI) / 180);
+  }
+  ctx.scale(flipHorizontal, flipVertical);
+  ctx.drawImage(
+    previewImg,
+    -canvas.width / 2,
+    -canvas.height / 2,
+    canvas.width,
+    canvas.height
+  );
+
+  // Tạo link tải xuống
+  const link = document.createElement("a");
+  link.download = "edited_image.jpg";
+  link.href = canvas.toDataURL("image/jpeg", 0.95);
+  link.click(); // Tự động kích hoạt tải xuống
+};
+
+// // Cập nhật event listener cho nút download
+// document.querySelector(".download-img").addEventListener("click", (e) => {
+//   e.preventDefault();
+//   downloadImage();
+// });
 
 //Drawing
 

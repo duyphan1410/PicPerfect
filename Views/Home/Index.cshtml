@@ -47,9 +47,19 @@
                 <button class="choose-img" style="background: #6C757D; border: 1px solid #6C757D;">
                     Choose Image
                 </button>
-                <button type="submit" class="save-img btn btn-primary" style="margin-left: 5px;">
-                    Save Image
-                </button>
+                <div class="btn-group" style="margin-left: 5px;">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Save Image
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item save-img" href="#"><i class="fas fa-save me-2"></i>Lưu ảnh</a></li>
+                        <li><a class="dropdown-item update-img" href="#"><i class="fas fa-edit me-2"></i>Cập nhật
+                                ảnh</a></li>
+                        <li><a class="dropdown-item download-img" href="#"><i class="fas fa-download me-2"></i>Tải
+                                ảnh</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
