@@ -265,6 +265,47 @@ document.querySelector(".download-img").addEventListener("click", (e) => {
   console.log("Download image clicked");
 });
 
+// Thêm hàm downloadImage
+const downloadImage = () => {
+  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
+    alert("Vui lòng chọn ảnh trước khi tải xuống!");
+    return;
+  }
+
+  // Tạo canvas với ảnh đã chỉnh sửa
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = previewImg.naturalWidth;
+  canvas.height = previewImg.naturalHeight;
+
+  // Áp dụng các hiệu ứng đã chỉnh sửa
+  ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  if (rotate !== 0) {
+    ctx.rotate((rotate * Math.PI) / 180);
+  }
+  ctx.scale(flipHorizontal, flipVertical);
+  ctx.drawImage(
+    previewImg,
+    -canvas.width / 2,
+    -canvas.height / 2,
+    canvas.width,
+    canvas.height
+  );
+
+  // Tạo link tải xuống
+  const link = document.createElement("a");
+  link.download = "edited_image.jpg";
+  link.href = canvas.toDataURL("image/jpeg", 0.95);
+  link.click(); // Tự động kích hoạt tải xuống
+};
+
+// Cập nhật event listener cho nút download
+document.querySelector(".download-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  downloadImage();
+});
+
 //Drawing
 
 //const canvas = document.querySelector("canvas"),
