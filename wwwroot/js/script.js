@@ -328,6 +328,8 @@ document.querySelector(".download-img").addEventListener("click", (e) => {
     alert("Vui lòng chọn ảnh trước!");
     return;
   }
+  e.preventDefault();
+  downloadImage();
   // Sẽ thêm chức năng sau
   console.log("Download image clicked");
 });
@@ -367,11 +369,11 @@ const downloadImage = () => {
   link.click(); // Tự động kích hoạt tải xuống
 };
 
-// Cập nhật event listener cho nút download
-document.querySelector(".download-img").addEventListener("click", (e) => {
-  e.preventDefault();
-  downloadImage();
-});
+// // Cập nhật event listener cho nút download
+// document.querySelector(".download-img").addEventListener("click", (e) => {
+//   e.preventDefault();
+//   downloadImage();
+// });
 
 //Drawing
 
