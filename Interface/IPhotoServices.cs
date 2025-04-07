@@ -6,5 +6,6 @@ namespace PicPerfect.Interface
     {
         Task<ImageUploadResult> AddPhotoAsync(IFormFile file);
         Task<DeletionResult> DeletePhotoAsync(string publicUrl);
+        Task<ImageUploadResult> UpdatePhotoAsync(IFormFile file, string publicId);
     }
 }

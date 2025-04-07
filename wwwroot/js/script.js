@@ -19,6 +19,9 @@ let rotate = 0,
   flipHorizontal = 1,
   flipVertical = 1;
 
+// Biến để lưu trữ ID ảnh hiện tại
+let currentImageId = null;
+
 const loadImage = () => {
   let file = fileInput.files[0];
   if (!file) return;
@@ -117,7 +120,9 @@ const loadSavedImages = async () => {
             <img src="${image.imagePath}" class="card-img-top" alt="${image.imageName}" style="height: 150px; object-fit: cover;">
             <div class="card-body">
               <p class="card-text small">${image.imageName}</p>
-              <button class="btn btn-sm btn-primary select-saved-image" data-url="${image.imagePath}">
+              <button class="btn btn-sm btn-primary select-saved-image" 
+                data-url="${image.imagePath}"
+                data-id="${image.imageId}">
                 Chọn ảnh này
               </button>
             </div>
@@ -130,6 +135,7 @@ const loadSavedImages = async () => {
       document.querySelectorAll(".select-saved-image").forEach((btn) => {
         btn.addEventListener("click", () => {
           const imageUrl = btn.dataset.url;
+          currentImageId = btn.dataset.id; // Lưu ID ảnh
           previewImg.crossOrigin = "anonymous";
           previewImg.src = imageUrl;
           previewImg.onload = () => {
@@ -244,15 +250,76 @@ document.querySelector(".save-img").addEventListener("click", (e) => {
   saveImage();
 });
 
-// Chuẩn bị cho các chức năng sắp tới
-document.querySelector(".update-img").addEventListener("click", (e) => {
-  e.preventDefault();
+// Thêm hàm updateImage
+const updateImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    alert("Vui lòng chọn ảnh trước!");
+    alert("Vui lòng chọn ảnh trước khi cập nhật!");
     return;
   }
-  // Sẽ thêm chức năng sau
-  console.log("Update image clicked");
+
+  if (!currentImageId) {
+    alert("Vui lòng chọn một ảnh đã lưu để cập nhật!");
+    return;
+  }
+
+  const loadingOverlay = document.querySelector(".loading-overlay");
+  loadingOverlay.style.display = "flex";
+
+  try {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = previewImg.naturalWidth;
+    canvas.height = previewImg.naturalHeight;
+
+    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    if (rotate !== 0) {
+      ctx.rotate((rotate * Math.PI) / 180);
+    }
+    ctx.scale(flipHorizontal, flipVertical);
+    ctx.drawImage(
+      previewImg,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    );
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.95)
+    );
+    const editedFile = new File([blob], "edited_image.jpg", {
+      type: "image/jpeg",
+    });
+
+    const formData = new FormData();
+    formData.append("file", editedFile);
+    formData.append("imageId", currentImageId);
+
+    const response = await fetch("/Home/UpdateImage", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert(result.message);
+      loadSavedImages();
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    console.error("Error updating image:", error);
+    alert("Có lỗi xảy ra khi cập nhật ảnh");
+  } finally {
+    loadingOverlay.style.display = "none";
+  }
+};
+
+// Cập nhật event listener cho nút update
+document.querySelector(".update-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  updateImage();
 });
 
 document.querySelector(".download-img").addEventListener("click", (e) => {
