@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PicPerfect")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40b452a40e1ed619bac454dafd0c7fb77a855929")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7783963a7d83445debb115cf576468666470b54e")]
 [assembly: System.Reflection.AssemblyProductAttribute("PicPerfect")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PicPerfect")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
