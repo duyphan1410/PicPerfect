@@ -1,1 +1,83 @@
-.qodo
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code settings
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# .NET Core specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Core static files
+wwwroot/lib/
+
+# Publish output
+publish/
+*.publish.xml
+
+# NuGet packages
+*.nupkg
+*.snupkg
+*.nuspec
+.packages/
+.nuget/
+packages/
+# Uncomment if using package restore
+# !packages/build/
+
+# Rider
+.idea/
+
+# Mac and Linux
+.DS_Store
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# User secrets
+secrets.json
+*.secret.json
+
+# EF Core Migrations (if you're keeping snapshots out of git)
+Migrations/
+
+# dotCover
+*.dotCover
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Tye
+.tye/
+
+# Docker
+docker-compose.override.yml
+.env
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Test results
+TestResults/

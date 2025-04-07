@@ -11,7 +11,7 @@ namespace PicPerfect.Models
         [Key]
         public int ImageId { get; set; }
         [ForeignKey(nameof(Users))]
-        public int UserId { get; set; } 
+        public int UserId { get; set; }
         public string UploadDatetime { get; set; }
         public string ImagePath { get; set; }
         [NotMapped] // Không cần ánh xạ thuộc tính này với cột trong cơ sở dữ liệu
