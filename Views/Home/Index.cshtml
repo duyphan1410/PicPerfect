@@ -53,9 +53,29 @@
                         Save Image
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item save-img" href="#"><i class="fas fa-save me-2"></i>Lưu ảnh</a></li>
-                        <li><a class="dropdown-item update-img" href="#"><i class="fas fa-edit me-2"></i>Cập nhật
-                                ảnh</a></li>
+                        @if (Context.Session.GetString("username") != null)
+                        {
+                            <li><a class="dropdown-item save-img" href="#"><i class="fas fa-save me-2"></i>Lưu ảnh</a></li>
+                            <li><a class="dropdown-item update-img" href="#"><i class="fas fa-edit me-2"></i>Cập nhật
+                                    ảnh</a></li>
+                        }
+                        else
+                        {
+                            <li>
+                                <button class="dropdown-item" type="button" disabled data-bs-toggle="tooltip"
+                                    data-bs-custom-class="custom-tooltip" data-bs-placement="right"
+                                    data-bs-title="Vui lòng đăng nhập để sử dụng tính năng này">
+                                    <i class="fas fa-save me-2"></i>Lưu ảnh
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button" disabled data-bs-toggle="tooltip"
+                                    data-bs-custom-class="custom-tooltip" data-bs-placement="right"
+                                    data-bs-title="Vui lòng đăng nhập để sử dụng tính năng này">
+                                    <i class="fas fa-edit me-2"></i>Cập nhật ảnh
+                                </button>
+                            </li>
+                        }
                         <li><a class="dropdown-item download-img" href="#"><i class="fas fa-download me-2"></i>Tải
                                 ảnh</a></li>
                     </ul>

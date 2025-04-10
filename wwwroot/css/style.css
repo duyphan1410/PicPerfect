@@ -312,3 +312,30 @@ body {
   background: #4262e0;
   border: 1px solid #4262e0;
 }
+
+/* Style cho dropdown items bị disabled */
+.dropdown-item.disabled {
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Custom tooltip */
+.custom-tooltip {
+  --bs-tooltip-bg: #5372f0;
+  --bs-tooltip-color: white;
+  --bs-tooltip-padding-x: 1rem;
+  --bs-tooltip-padding-y: 0.5rem;
+  font-size: 13px;
+}
+
+/* Disabled item styling */
+.dropdown-menu button.dropdown-item:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
+
+.dropdown-menu button.dropdown-item:disabled:hover {
+  background-color: transparent;
+}

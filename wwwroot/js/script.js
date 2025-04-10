@@ -244,11 +244,51 @@ filterSlider.addEventListener("input", updateFilter);
 console.log("Adding click event listener to save button");
 console.log("Save button element:", saveImgBtn);
 
-// Cập nhật event listener cho nút save
-document.querySelector(".save-img").addEventListener("click", (e) => {
-  e.preventDefault();
-  saveImage();
+// Đặt đoạn code này ở đầu file hoặc trong DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+  // Khởi tạo tất cả tooltips
+  const tooltipList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  [...tooltipList].map(
+    (tooltipTriggerEl) =>
+      new bootstrap.Tooltip(tooltipTriggerEl, {
+        trigger: "hover",
+      })
+  );
+
+  // Ngăn chặn click event trên các button disabled
+  document.querySelectorAll(".dropdown-item:disabled").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
 });
+
+// Cập nhật các event listeners cho các nút
+// Chỉ thêm event listeners nếu các elements tồn tại
+const saveBtn = document.querySelector(".save-img:not(.disabled)");
+if (saveBtn) {
+  saveBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    saveImage();
+  });
+}
+
+const updateBtn = document.querySelector(".update-img:not(.disabled)");
+if (updateBtn) {
+  updateBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    updateImage();
+  });
+}
+
+const downloadBtn = document.querySelector(".download-img");
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    downloadImage();
+  });
+}
 
 // Thêm hàm updateImage
 const updateImage = async () => {
@@ -316,23 +356,6 @@ const updateImage = async () => {
   }
 };
 
-// Cập nhật event listener cho nút update
-document.querySelector(".update-img").addEventListener("click", (e) => {
-  e.preventDefault();
-  updateImage();
-});
-
-document.querySelector(".download-img").addEventListener("click", (e) => {
-  e.preventDefault();
-  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    alert("Vui lòng chọn ảnh trước!");
-    return;
-  }
-  downloadImage();
-  // Sẽ thêm chức năng sau
-  console.log("Download image clicked");
-});
-
 // Thêm hàm downloadImage
 const downloadImage = () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
@@ -367,12 +390,6 @@ const downloadImage = () => {
   link.href = canvas.toDataURL("image/jpeg", 0.95);
   link.click(); // Tự động kích hoạt tải xuống
 };
-
-// // Cập nhật event listener cho nút download
-// document.querySelector(".download-img").addEventListener("click", (e) => {
-//   e.preventDefault();
-//   downloadImage();
-// });
 
 //Drawing
 
