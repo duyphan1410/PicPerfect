@@ -232,6 +232,13 @@ namespace PicPerfect.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult CheckLoginStatus()
+        {
+            var username = HttpContext.Session.GetString("username");
+            return Json(new { isLoggedIn = !string.IsNullOrEmpty(username) });
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
