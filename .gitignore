@@ -81,3 +81,4 @@ docker-compose.override.yml
 
 # Test results
 TestResults/
+.qodo
