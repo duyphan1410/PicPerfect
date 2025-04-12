@@ -22,6 +22,63 @@ let rotate = 0,
 // Biến để lưu trữ ID ảnh hiện tại
 let currentImageId = null;
 
+// Hàm hiển thị toast
+const showToast = (message, type = "success") => {
+  const toastContainer =
+    document.getElementById("toastContainer") ||
+    (() => {
+      const container = document.createElement("div");
+      container.id = "toastContainer";
+      container.style.position = "fixed";
+      container.style.top = "20px";
+      container.style.right = "20px";
+      container.style.zIndex = "9999";
+      document.body.appendChild(container);
+      return container;
+    })();
+
+  const toast = document.createElement("div");
+  toast.className = `toast align-items-center border-0`;
+  toast.style.minWidth = "300px";
+  toast.style.fontSize = "16px";
+
+  // Thêm style cho từng loại toast
+  if (type === "success") {
+    toast.style.backgroundColor = "#28a745";
+    toast.style.color = "white";
+  } else if (type === "warning") {
+    toast.style.backgroundColor = "#ffc107";
+    toast.style.color = "black";
+  } else if (type === "danger") {
+    toast.style.backgroundColor = "#dc3545";
+    toast.style.color = "white";
+  }
+
+  toast.setAttribute("role", "alert");
+  toast.setAttribute("aria-live", "assertive");
+  toast.setAttribute("aria-atomic", "true");
+
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body" style="padding: 1rem;">
+        ${message}
+      </div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+
+  toastContainer.appendChild(toast);
+  const bsToast = new bootstrap.Toast(toast, {
+    delay: 1500, // Tự động tắt sau 3 giây
+    autohide: true, // Tự động ẩn
+  });
+  bsToast.show();
+
+  toast.addEventListener("hidden.bs.toast", () => {
+    toast.remove();
+  });
+};
+
 const loadImage = () => {
   let file = fileInput.files[0];
   if (!file) return;
@@ -178,13 +235,11 @@ localImageInput.addEventListener("change", (e) => {
 });
 
 const saveImage = async () => {
-  // Kiểm tra xem đã có ảnh được chọn chưa
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    alert("Vui lòng chọn ảnh trước khi lưu!");
+    showToast("Please select an image!", "warning");
     return;
   }
 
-  // Hiển thị overlay loading
   const loadingOverlay = document.querySelector(".loading-overlay");
   loadingOverlay.style.display = "flex";
 
@@ -225,14 +280,14 @@ const saveImage = async () => {
 
     const result = await response.json();
     if (result.success) {
-      alert(result.message);
+      showToast(result.message);
       loadSavedImages();
     } else {
-      alert(result.message);
+      showToast(result.message, "danger");
     }
   } catch (error) {
     console.error("Error saving image:", error);
-    alert("Có lỗi xảy ra khi lưu ảnh");
+    showToast("Có lỗi xảy ra khi lưu ảnh", "danger");
   } finally {
     loadingOverlay.style.display = "none";
   }
@@ -253,12 +308,12 @@ document.querySelector(".save-img").addEventListener("click", (e) => {
 // Thêm hàm updateImage
 const updateImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    alert("Vui lòng chọn ảnh trước khi cập nhật!");
+    showToast("Vui lòng chọn ảnh trước khi cập nhật!", "warning");
     return;
   }
 
   if (!currentImageId) {
-    alert("Vui lòng chọn một ảnh đã lưu để cập nhật!");
+    showToast("Vui lòng chọn một ảnh đã lưu để cập nhật!", "warning");
     return;
   }
 
@@ -303,14 +358,14 @@ const updateImage = async () => {
 
     const result = await response.json();
     if (result.success) {
-      alert(result.message);
+      showToast(result.message);
       loadSavedImages();
     } else {
-      alert(result.message);
+      showToast(result.message, "danger");
     }
   } catch (error) {
     console.error("Error updating image:", error);
-    alert("Có lỗi xảy ra khi cập nhật ảnh");
+    showToast("Có lỗi xảy ra khi cập nhật ảnh", "danger");
   } finally {
     loadingOverlay.style.display = "none";
   }
@@ -325,7 +380,7 @@ document.querySelector(".update-img").addEventListener("click", (e) => {
 document.querySelector(".download-img").addEventListener("click", (e) => {
   e.preventDefault();
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    alert("Vui lòng chọn ảnh trước!");
+    showToast("Vui lòng chọn ảnh trước!", "warning");
     return;
   }
   downloadImage();
@@ -336,7 +391,7 @@ document.querySelector(".download-img").addEventListener("click", (e) => {
 // Thêm hàm downloadImage
 const downloadImage = () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    alert("Vui lòng chọn ảnh trước khi tải xuống!");
+    showToast("Vui lòng chọn ảnh trước khi tải xuống!", "warning");
     return;
   }
 
