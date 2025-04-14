@@ -38,21 +38,13 @@ const showToast = (message, type = "success") => {
     })();
 
   const toast = document.createElement("div");
-  toast.className = `toast align-items-center border-0`;
+  toast.className = `toast align-items-center border-0 bg-green text-white`;
   toast.style.minWidth = "300px";
   toast.style.fontSize = "16px";
-
-  // Thêm style cho từng loại toast
-  if (type === "success") {
-    toast.style.backgroundColor = "#28a745";
-    toast.style.color = "white";
-  } else if (type === "warning") {
-    toast.style.backgroundColor = "#ffc107";
-    toast.style.color = "black";
-  } else if (type === "danger") {
-    toast.style.backgroundColor = "#dc3545";
-    toast.style.color = "white";
-  }
+  toast.style.backgroundColor = "#28a745";
+  toast.style.color = "white";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow = "0 0.5rem 1rem rgba(0, 0, 0, 0.15)";
 
   toast.setAttribute("role", "alert");
   toast.setAttribute("aria-live", "assertive");
@@ -63,14 +55,14 @@ const showToast = (message, type = "success") => {
       <div class="toast-body" style="padding: 1rem;">
         ${message}
       </div>
-      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   `;
 
   toastContainer.appendChild(toast);
   const bsToast = new bootstrap.Toast(toast, {
-    delay: 1500, // Tự động tắt sau 3 giây
-    autohide: true, // Tự động ẩn
+    delay: 1500,
+    autohide: true,
   });
   bsToast.show();
 
