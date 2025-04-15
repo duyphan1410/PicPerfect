@@ -43,8 +43,7 @@ namespace PicPerfect.Controllers
                         .Where(a => a.CreatorUserId == userId)
                         .ToListAsync();
 
-                    //viewbag userAlbums size
-                    ViewBag.UserAlbumsSize = userAlbums.Count;
+
                     // Get album images for each album
                     foreach (var album in userAlbums)
                     {
@@ -52,7 +51,9 @@ namespace PicPerfect.Controllers
                             .Where(ai => ai.AlbumId == album.AlbumId)
                             .Include(ai => ai.Image)
                             .ToListAsync();
+                        album.NumberOfImage = album.AlbumImages.Count;
                     }
+
 
                     return View(userAlbums.ToList());
                 }
@@ -70,11 +71,15 @@ namespace PicPerfect.Controllers
             }
 
             var album = await _context.Album
+                .Include(a => a.AlbumImages)
+                .ThenInclude(ai => ai.Image)
                 .FirstOrDefaultAsync(m => m.AlbumId == id);
+
             if (album == null)
             {
                 return NotFound();
             }
+            album.NumberOfImage = album.AlbumImages?.Count ?? 0;
 
             return View(album);
         }
@@ -145,6 +150,7 @@ namespace PicPerfect.Controllers
             {
                 return NotFound();
             }
+            album.NumberOfImage = album.AlbumImages?.Count ?? 0;
             return View(album);
         }
 
@@ -192,11 +198,13 @@ namespace PicPerfect.Controllers
             }
 
             var album = await _context.Album
+                .Include(a => a.AlbumImages)
                 .FirstOrDefaultAsync(m => m.AlbumId == id);
             if (album == null)
             {
                 return NotFound();
             }
+            album.NumberOfImage = album.AlbumImages?.Count ?? 0;
 
             return View(album);
         }
@@ -214,6 +222,122 @@ namespace PicPerfect.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Albums/ManageImages/5
+        public async Task<IActionResult> ManageImages(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var album = await _context.Album
+                .Include(a => a.AlbumImages)
+                .ThenInclude(ai => ai.Image)
+                .FirstOrDefaultAsync(m => m.AlbumId == id);
+
+            if (album == null)
+            {
+                return NotFound();
+            }
+
+            var username = HttpContext.Session.GetString("username");
+            if (username == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            // Lấy danh sách ảnh của user
+            var userImages = await _context.Images
+                .Where(i => i.UserId == user.UserId)
+                .ToListAsync();
+
+            ViewBag.UserImages = userImages;
+            ViewBag.Album = album;
+
+            return View();
+        }
+
+        // POST: Albums/AddImage/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddImage(int id, List<int> selectedImages)
+        {
+            var album = await _context.Album.FindAsync(id);
+            if (album == null)
+            {
+                return NotFound();
+            }
+
+            if (selectedImages != null && selectedImages.Any())
+            {
+                foreach (var imageId in selectedImages)
+                {
+                    // Kiểm tra xem ảnh đã tồn tại trong album chưa
+                    var existingImage = await _context.AlbumImages
+                        .FirstOrDefaultAsync(ai => ai.AlbumId == id && ai.ImageId == imageId);
+
+                    if (existingImage == null)
+                    {
+                        var albumImage = new AlbumImages
+                        {
+                            AlbumId = id,
+                            ImageId = imageId
+                        };
+                        _context.AlbumImages.Add(albumImage);
+                    }
+                }
+
+                // Cập nhật số lượng ảnh trong album
+                album.NumberOfImage = await _context.AlbumImages
+                    .Where(ai => ai.AlbumId == id)
+                    .CountAsync();
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Đã thêm ảnh vào album thành công!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Vui lòng chọn ít nhất một ảnh để thêm vào album.";
+            }
+
+            return RedirectToAction(nameof(ManageImages), new { id = id });
+        }
+
+        // POST: Albums/RemoveImage/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveImage(int id, int imageId)
+        {
+            var albumImage = await _context.AlbumImages
+                .FirstOrDefaultAsync(ai => ai.AlbumId == id && ai.ImageId == imageId);
+
+            if (albumImage != null)
+            {
+                _context.AlbumImages.Remove(albumImage);
+                await _context.SaveChangesAsync();
+
+                // Cập nhật số lượng ảnh trong album
+                var album = await _context.Album.FindAsync(id);
+                if (album != null)
+                {
+                    album.NumberOfImage = await _context.AlbumImages
+                        .Where(ai => ai.AlbumId == id)
+                        .CountAsync();
+                    await _context.SaveChangesAsync();
+                }
+
+                TempData["SuccessMessage"] = "Đã xóa ảnh khỏi album thành công!";
+            }
+
+            return RedirectToAction(nameof(ManageImages), new { id = id });
         }
 
         private bool AlbumExists(int id)

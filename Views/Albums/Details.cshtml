@@ -1,55 +1,109 @@
 ﻿@model PicPerfect.Models.Album
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Album";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Album</h4>
+<div class="container">
+    <h1>Chi tiết Album</h1>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AlbumName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AlbumName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreationDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreationDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatorUserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatorUserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfImage)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CoverImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CoverImage)
-        </dd>
-    </dl>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Thông tin Album</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Tên Album</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.AlbumName)</dd>
+
+                        <dt class="col-sm-4">Mô tả</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
+
+                        <dt class="col-sm-4">Ngày tạo</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.CreationDate)</dd>
+
+                        <dt class="col-sm-4">Số ảnh</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.NumberOfImage)</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <h5>Ảnh bìa</h5>
+                        <div class="cover-image-container mx-auto">
+                            <img src="@Model.CoverImage" alt="Cover Image" class="cover-image" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h4>Danh sách ảnh trong album</h4>
+                @if (Model.AlbumImages != null && Model.AlbumImages.Any())
+                {
+                    <div class="album-thumbnails">
+                        @foreach (var albumImage in Model.AlbumImages)
+                        {
+                            <div class="thumbnail-item">
+                                <img src="@albumImage.Image.ImagePath" alt="@albumImage.Image.ImageName" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Album này chưa có ảnh nào.</p>
+                }
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="ManageImages" asp-route-id="@Model.AlbumId" class="btn btn-primary">Thêm ảnh</a>
+                <a asp-action="Edit" asp-route-id="@Model.AlbumId" class="btn btn-secondary">Chỉnh sửa</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AlbumId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    .cover-image-container {
+        width: 50%;
+        max-width: 400px;
+    }
+
+    .cover-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .album-thumbnails {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .thumbnail-item {
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .thumbnail-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .thumbnail-item:hover img {
+        transform: scale(1.1);
+    }
+</style>

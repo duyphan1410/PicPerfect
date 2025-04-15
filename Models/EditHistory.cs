@@ -9,7 +9,7 @@ namespace PicPerfect.Models
         public int EditId { get; set; }
         [ForeignKey(nameof(Images))]
         public int ImageId { get; set; }
-        public string EditDescription { get; set; }
-        public string EditDatetime { get; set; }
+        public string? EditDescription { get; set; }
+        public string? EditDatetime { get; set; }
     }
 }
