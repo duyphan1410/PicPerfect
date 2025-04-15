@@ -5,53 +5,92 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container pt-5">
+    <h1>Chỉnh sửa Album</h1>
 
-<h4>Album</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="AlbumId" />
-            <div class="form-group">
-                <label asp-for="AlbumName" class="control-label"></label>
-                <input asp-for="AlbumName" class="form-control" />
-                <span asp-validation-for="AlbumName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreationDate" class="control-label"></label>
-                <input asp-for="CreationDate" class="form-control" />
-                <span asp-validation-for="CreationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatorUserId" class="control-label"></label>
-                <input asp-for="CreatorUserId" class="form-control" />
-                <span asp-validation-for="CreatorUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumberOfImage" class="control-label"></label>
-                <input asp-for="NumberOfImage" class="form-control" />
-                <span asp-validation-for="NumberOfImage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CoverImage" class="control-label"></label>
-                <input asp-for="CoverImage" class="form-control" />
-                <span asp-validation-for="CoverImage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    <h4>Album</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="AlbumId" />
+                <div class="form-group">
+                    <label asp-for="AlbumName" class="control-label"></label>
+                    <input asp-for="AlbumName" class="form-control" />
+                    <span asp-validation-for="AlbumName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CreationDate" class="control-label"></label>
+                    <input asp-for="CreationDate" class="form-control" />
+                    <span asp-validation-for="CreationDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CreatorUserId" class="control-label"></label>
+                    <input asp-for="CreatorUserId" class="form-control" />
+                    <span asp-validation-for="CreatorUserId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="NumberOfImage" class="control-label"></label>
+                    <input asp-for="NumberOfImage" class="form-control" />
+                    <span asp-validation-for="NumberOfImage" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CoverImage" class="control-label"></label>
+                    <input asp-for="CoverImage" class="form-control" />
+                    <span asp-validation-for="CoverImage" class="text-danger"></span>
+                    @* Hiển thị ảnh nếu có URL trong CoverImage *@
+                    <div class="mt-3">
+                        <img src="@Model.CoverImage" alt="Cover Image" class="img-thumbnail"
+                            style="max-width: 300%; height: auto;" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a asp-action="ManageImages" asp-route-id="@Model?.AlbumId" class="btn btn-primary">Thêm ảnh</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 300%;
+            max-width: 500px;
+            /* Tăng chiều rộng của các trường nhập */
+        }
+
+        .btn {
+            margin-right: 10px;
+            /* Tạo khoảng cách giữa các nút */
+        }
+
+        .img-thumbnail {
+            display: block;
+            margin-top: 10px;
+            max-width: 300%;
+            /* Giới hạn chiều rộng của ảnh */
+            height: auto;
+        }
+
+        .form-container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            /* Màu nền nhạt */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <div>
+        <a asp-action="Index">Back to List</a>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
