@@ -22,10 +22,12 @@ namespace PicPerfect.Controllers
         // GET: Albums
         public async Task<IActionResult> Index()
         {
-            string username = HttpContext.Session.GetString("username");
+            var username = HttpContext.Session.GetString("username");
             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(username));
             if (username != null)
             {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+                ViewBag.FullName = (user != null) ? user.Fullname : username;
                 ViewBag.Username = username;
 
                 // Get the user ID based on the username
@@ -41,7 +43,8 @@ namespace PicPerfect.Controllers
                         .Where(a => a.CreatorUserId == userId)
                         .ToListAsync();
 
-                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(userAlbums));
+                    //viewbag userAlbums size
+                    ViewBag.UserAlbumsSize = userAlbums.Count;
                     // Get album images for each album
                     foreach (var album in userAlbums)
                     {
@@ -79,7 +82,7 @@ namespace PicPerfect.Controllers
         // GET: Albums/Create
         public IActionResult Create()
         {
-            string username = HttpContext.Session.GetString("username");
+            var username = HttpContext.Session.GetString("username");
             if (username != null)
             {
                 var user = _context.Users.FirstOrDefault(u => u.Username == username);
@@ -108,6 +111,7 @@ namespace PicPerfect.Controllers
             {
                 try
                 {
+                    Console.WriteLine(album.ToString());
                     _context.Add(album);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
