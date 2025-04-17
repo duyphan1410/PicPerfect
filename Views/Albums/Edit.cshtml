@@ -1,96 +1,265 @@
 ﻿@model PicPerfect.Models.Album
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh sửa Album";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container pt-5">
     <h1>Chỉnh sửa Album</h1>
-
-    <h4>Album</h4>
     <hr />
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+    }
+
     <div class="row">
-        <div class="col-md-4">
-            <form asp-action="Edit">
+        <div class="col">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="AlbumId" />
-                <div class="form-group">
-                    <label asp-for="AlbumName" class="control-label"></label>
+                <input type="hidden" asp-for="CreationDate" />
+                <input type="hidden" asp-for="CreatorUserId" />
+                <input type="hidden" asp-for="NumberOfImage" />
+                <input type="hidden" asp-for="CoverImage" />
+
+                <div class="form-group mb-4">
+                    <label asp-for="AlbumName" class="control-label">Tên Album</label>
                     <input asp-for="AlbumName" class="form-control" />
                     <span asp-validation-for="AlbumName" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Description" class="control-label"></label>
-                    <input asp-for="Description" class="form-control" />
+
+                <div class="form-group mb-4">
+                    <label asp-for="Description" class="control-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="CreationDate" class="control-label"></label>
-                    <input asp-for="CreationDate" class="form-control" />
-                    <span asp-validation-for="CreationDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CreatorUserId" class="control-label"></label>
-                    <input asp-for="CreatorUserId" class="form-control" />
-                    <span asp-validation-for="CreatorUserId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="NumberOfImage" class="control-label"></label>
-                    <input asp-for="NumberOfImage" class="form-control" />
-                    <span asp-validation-for="NumberOfImage" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CoverImage" class="control-label"></label>
-                    <input asp-for="CoverImage" class="form-control" />
-                    <span asp-validation-for="CoverImage" class="text-danger"></span>
-                    @* Hiển thị ảnh nếu có URL trong CoverImage *@
-                    <div class="mt-3">
-                        <img src="@Model.CoverImage" alt="Cover Image" class="img-thumbnail"
-                            style="max-width: 300%; height: auto;" />
+
+                <div class="form-group mb-4">
+                    <label class="control-label">Ảnh bìa</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Ảnh hiện tại</h5>
+                                    <div class="current-cover-image mb-3">
+                                        <img src="@Model.CoverImage" alt="Cover Image" class="img-thumbnail"
+                                            style="max-width: 100%; height: auto;" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Chọn ảnh bìa mới</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Từ máy tính</label>
+                                        <input type="file" name="coverImageFile" class="form-control" accept="image/*"
+                                            id="coverImageFile" />
+                                        <div id="imagePreview" class="mt-2 d-none">
+                                            <img src="" alt="Preview" class="img-thumbnail"
+                                                style="max-width: 100%; height: auto;" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Hoặc chọn từ ảnh đã có</label>
+                                        <div class="card">
+                                            <div class="card-body scrollable-container">
+                                                <div class="row">
+                                                    @if (ViewBag.UserImages != null && ViewBag.UserImages.Count > 0)
+                                                    {
+                                                        @foreach (var image in ViewBag.UserImages)
+                                                        {
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="card h-100 image-select-card"
+                                                                    data-image-id="@image.ImageId">
+                                                                    <img src="@image.ImagePath" class="card-img-top"
+                                                                        alt="@image.ImageName"
+                                                                        style="max-height: auto;max-width: auto; object-fit: cover;">
+                                                                    <input type="radio" name="coverImageUrl"
+                                                                        value="@image.ImagePath"
+                                                                        class="form-check-input image-checkbox d-none"
+                                                                        id="image_@image.ImageId">
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="col-12 text-center">
+                                                            <p class="text-muted">Bạn chưa có ảnh nào để chọn làm ảnh bìa.
+                                                            </p>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                    <a asp-action="ManageImages" asp-route-id="@Model?.AlbumId" class="btn btn-primary">Thêm ảnh</a>
-                </div>
 
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    <a asp-action="Details" asp-route-id="@Model.AlbumId" class="btn btn-secondary">Quay lại</a>
+                </div>
             </form>
         </div>
     </div>
-    <style>
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            width: 300%;
-            max-width: 500px;
-            /* Tăng chiều rộng của các trường nhập */
-        }
-
-        .btn {
-            margin-right: 10px;
-            /* Tạo khoảng cách giữa các nút */
-        }
-
-        .img-thumbnail {
-            display: block;
-            margin-top: 10px;
-            max-width: 300%;
-            /* Giới hạn chiều rộng của ảnh */
-            height: auto;
-        }
-
-        .form-container {
-            padding: 20px;
-            background-color: #f8f9fa;
-            /* Màu nền nhạt */
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-    <div>
-        <a asp-action="Index">Back to List</a>
-    </div>
 </div>
+
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .btn {
+        margin-right: 10px;
+    }
+
+    .img-thumbnail {
+        display: block;
+        margin-top: 10px;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .current-cover-image {
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 4px;
+    }
+
+    .scrollable-container {
+        height: 450px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    .scrollable-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollable-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .scrollable-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+    .scrollable-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .image-select-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        overflow: hidden;
+    }
+
+    .image-select-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-select-card.selected {
+        border-color: #28a745;
+        border-width: 5px;
+
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.querySelector('#coverImageFile');
+            const imagePreview = document.querySelector('#imagePreview');
+            const imageCards = document.querySelectorAll('.image-select-card');
+
+            // Xử lý khi chọn file từ máy tính
+            fileInput.addEventListener('change', function () {
+                if (this.files.length > 0) {
+                    // Hiển thị xem trước ảnh
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.querySelector('img').src = e.target.result;
+                        imagePreview.classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(this.files[0]);
+
+                    // Bỏ chọn tất cả radio buttons
+                    document.querySelectorAll('input[name="coverImageUrl"]').forEach(radio => {
+                        radio.checked = false;
+                        radio.closest('.image-select-card').classList.remove('selected');
+                    });
+                } else {
+                    imagePreview.classList.add('d-none');
+                }
+            });
+
+            // Xử lý khi click vào card ảnh
+            imageCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const radio = this.querySelector('.image-checkbox');
+                    radio.checked = !radio.checked;
+
+                    if (radio.checked) {
+                        // Bỏ chọn tất cả các card khác
+                        imageCards.forEach(c => {
+                            if (c !== this) {
+                                c.classList.remove('selected');
+                                c.querySelector('.image-checkbox').checked = false;
+                            }
+                        });
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.remove('selected');
+                    }
+                });
+            });
+
+            // Xử lý khi radio thay đổi
+            document.querySelectorAll('input[name="coverImageUrl"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const card = this.closest('.image-select-card');
+                    if (this.checked) {
+                        // Bỏ chọn tất cả các card khác
+                        imageCards.forEach(c => {
+                            if (c !== card) {
+                                c.classList.remove('selected');
+                                c.querySelector('.image-checkbox').checked = false;
+                            }
+                        });
+                        card.classList.add('selected');
+
+                        // Xóa file đã chọn
+                        fileInput.value = '';
+                        imagePreview.classList.add('d-none');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                });
+            });
+        });
+    </script>
+}

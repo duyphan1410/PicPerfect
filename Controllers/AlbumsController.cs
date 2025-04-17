@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PicPerfect.DATA;
 using PicPerfect.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace PicPerfect.Controllers
 {
@@ -145,21 +147,38 @@ namespace PicPerfect.Controllers
                 return NotFound();
             }
 
-            var album = await _context.Album.FindAsync(id);
+            var album = await _context.Album
+                .Include(a => a.AlbumImages)
+                    .ThenInclude(ai => ai.Image)
+                .FirstOrDefaultAsync(a => a.AlbumId == id);
+
             if (album == null)
             {
                 return NotFound();
             }
+
+            // Lấy danh sách ảnh của user
+            var username = HttpContext.Session.GetString("username");
+            if (username != null)
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Username == username);
+                if (user != null)
+                {
+                    var userImages = await _context.Images
+                        .Where(i => i.UserId == user.UserId)
+                        .ToListAsync();
+                    ViewBag.UserImages = userImages;
+                }
+            }
+
             album.NumberOfImage = album.AlbumImages?.Count ?? 0;
             return View(album);
         }
 
         // POST: Albums/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AlbumId,AlbumName,Description,CreationDate,CreatorUserId,NumberOfImage,CoverImage")] Album album)
+        public async Task<IActionResult> Edit(int id, [Bind("AlbumId,AlbumName,Description,CreationDate,CreatorUserId,NumberOfImage,CoverImage")] Album album, IFormFile? coverImageFile, string? coverImageUrl)
         {
             if (id != album.AlbumId)
             {
@@ -170,8 +189,55 @@ namespace PicPerfect.Controllers
             {
                 try
                 {
-                    _context.Update(album);
+                    var existingAlbum = await _context.Album
+                        .Include(a => a.AlbumImages)
+                            .ThenInclude(ai => ai.Image)
+                        .FirstOrDefaultAsync(a => a.AlbumId == id);
+
+                    if (existingAlbum == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Cập nhật thông tin cơ bản
+                    existingAlbum.AlbumName = album.AlbumName;
+                    existingAlbum.Description = album.Description;
+
+                    // Xử lý ảnh bìa
+                    if (coverImageFile != null && coverImageFile.Length > 0)
+                    {
+                        // Tạo tên file duy nhất
+                        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(coverImageFile.FileName)}";
+                        var filePath = Path.Combine("wwwroot", "uploads", "covers", fileName);
+
+                        // Đảm bảo thư mục tồn tại
+                        Directory.CreateDirectory(Path.Combine("wwwroot", "uploads", "covers"));
+
+                        // Lưu file
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await coverImageFile.CopyToAsync(stream);
+                        }
+
+                        existingAlbum.CoverImage = $"/uploads/covers/{fileName}";
+                    }
+                    else if (!string.IsNullOrEmpty(coverImageUrl))
+                    {
+                        // Kiểm tra xem URL có hợp lệ không
+                        if (coverImageUrl.StartsWith("/") || coverImageUrl.StartsWith("http"))
+                        {
+                            existingAlbum.CoverImage = coverImageUrl;
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "URL ảnh không hợp lệ");
+                            return View(album);
+                        }
+                    }
+
+                    _context.Update(existingAlbum);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { id = album.AlbumId });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -184,9 +250,24 @@ namespace PicPerfect.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi cập nhật album: " + ex.Message);
+                }
             }
-            return View(album);
+
+            // Nếu có lỗi, load lại dữ liệu
+            var reloadedAlbum = await _context.Album
+                .Include(a => a.AlbumImages)
+                    .ThenInclude(ai => ai.Image)
+                .FirstOrDefaultAsync(a => a.AlbumId == id);
+
+            if (reloadedAlbum != null)
+            {
+                reloadedAlbum.NumberOfImage = reloadedAlbum.AlbumImages?.Count ?? 0;
+            }
+
+            return View(reloadedAlbum);
         }
 
         // GET: Albums/Delete/5

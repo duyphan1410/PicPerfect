@@ -41,28 +41,95 @@
             </div>
 
             <div class="mt-4">
-                <h4>Danh sách ảnh trong album</h4>
-                @if (Model.AlbumImages != null && Model.AlbumImages.Any())
-                {
-                    <div class="album-thumbnails">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Danh sách ảnh trong album</h4>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary" id="gridViewBtn">
+                            <i class="fas fa-th"></i> Xem dạng lưới
+                        </button>
+                        <button class="btn btn-outline-primary" id="listViewBtn">
+                            <i class="fas fa-list"></i> Xem dạng danh sách
+                        </button>
+                    </div>
+                </div>
+
+                <div id="gridView" class="album-thumbnails">
+                    @if (Model.AlbumImages != null && Model.AlbumImages.Any())
+                    {
                         @foreach (var albumImage in Model.AlbumImages)
                         {
-                            <div class="thumbnail-item">
+                            <div class="thumbnail-item" data-image-id="@albumImage.ImageId"
+                                data-image-path="@albumImage.Image.ImagePath">
                                 <img src="@albumImage.Image.ImagePath" alt="@albumImage.Image.ImageName" />
                             </div>
                         }
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">Album này chưa có ảnh nào.</p>
-                }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Album này chưa có ảnh nào.</p>
+                    }
+                </div>
+
+                <div id="listView" class="album-list d-none">
+                    @if (Model.AlbumImages != null && Model.AlbumImages.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var albumImage in Model.AlbumImages)
+                            {
+                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                    data-image-id="@albumImage.ImageId" data-image-path="@albumImage.Image.ImagePath">
+                                    <div class="d-flex align-items-center">
+                                        <img src="@albumImage.Image.ImagePath" alt="@albumImage.Image.ImageName" class="me-3"
+                                            style="width: 50px; height: 50px; object-fit: cover;" />
+                                        <span>@albumImage.Image.ImageName</span>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary edit-image" data-image-id="@albumImage.ImageId">
+                                            <i class="fas fa-edit"></i> Chỉnh sửa
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-image" data-image-id="@albumImage.ImageId">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Album này chưa có ảnh nào.</p>
+                    }
+                </div>
             </div>
 
             <div class="mt-4">
                 <a asp-action="ManageImages" asp-route-id="@Model.AlbumId" class="btn btn-primary">Thêm ảnh</a>
                 <a asp-action="Edit" asp-route-id="@Model.AlbumId" class="btn btn-secondary">Chỉnh sửa</a>
                 <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Xem ảnh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" alt="Full size image" class="img-fluid" id="modalImage" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary edit-image-modal">
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                </button>
+                <button type="button" class="btn btn-danger delete-image-modal">
+                    <i class="fas fa-trash"></i> Xóa
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
@@ -94,16 +161,91 @@
         overflow: hidden;
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .thumbnail-item:hover {
+        transform: scale(1.05);
     }
 
     .thumbnail-item img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.3s ease;
     }
 
-    .thumbnail-item:hover img {
-        transform: scale(1.1);
+    .album-list .list-group-item {
+        transition: background-color 0.3s ease;
+    }
+
+    .album-list .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .album-list img {
+        border-radius: 4px;
     }
 </style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Xử lý chuyển đổi giữa chế độ xem lưới và danh sách
+            $('#gridViewBtn').click(function () {
+                $('#gridView').removeClass('d-none');
+                $('#listView').addClass('d-none');
+                $(this).addClass('active');
+                $('#listViewBtn').removeClass('active');
+            });
+
+            $('#listViewBtn').click(function () {
+                $('#listView').removeClass('d-none');
+                $('#gridView').addClass('d-none');
+                $(this).addClass('active');
+                $('#gridViewBtn').removeClass('active');
+            });
+
+            // Xử lý hiển thị modal khi click vào ảnh
+            $('.thumbnail-item, .list-group-item').click(function () {
+                var imagePath = $(this).data('image-path');
+                var imageId = $(this).data('image-id');
+                $('#modalImage').attr('src', imagePath);
+                $('.edit-image-modal, .delete-image-modal').data('image-id', imageId);
+                $('#imageModal').modal('show');
+            });
+
+            // Xử lý nút chỉnh sửa trong modal
+            $('.edit-image-modal, .edit-image').click(function (e) {
+                e.stopPropagation();
+                var imageId = $(this).data('image-id');
+                window.location.href = '/Home/Index?imageId=' + imageId;
+            });
+
+            // Xử lý nút xóa trong modal
+            $('.delete-image-modal, .delete-image').click(function (e) {
+                e.stopPropagation();
+                var imageId = $(this).data('image-id');
+                if (confirm('Bạn có chắc chắn muốn xóa ảnh này?')) {
+                    $.ajax({
+                        url: '/Images/Delete/' + imageId,
+                        type: 'POST',
+                        data: {
+                            "__RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                location.reload();
+                            } else {
+                                alert('Có lỗi xảy ra khi xóa ảnh');
+                            }
+                        },
+                        error: function () {
+                            alert('Có lỗi xảy ra khi xóa ảnh');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
