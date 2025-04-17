@@ -168,8 +168,9 @@ const loadSavedImages = async () => {
       document.querySelectorAll(".select-saved-image").forEach((btn) => {
         btn.addEventListener("click", () => {
           const imageUrl = btn.dataset.url;
-          currentImageId = btn.dataset.id;
+          currentImageId = parseInt(btn.dataset.id, 10);
           const imageName = btn.dataset.name;
+          console.log("Đã chọn ảnh với ID:", currentImageId, "Tên:", imageName);
           previewImg.crossOrigin = "anonymous";
           previewImg.src = imageUrl;
           previewImg.onload = () => {
@@ -193,12 +194,15 @@ const loadSavedImages = async () => {
 
 const handleLocalImageSelect = (file) => {
   if (!file) return;
+  // Đặt lại currentImageId về null vì đây là ảnh mới
+  currentImageId = null;
   previewImg.crossOrigin = "anonymous";
   previewImg.src = URL.createObjectURL(file);
   previewImg.onload = () => {
     resetFilterBtn.click();
     document.querySelector(".container").classList.remove("disable");
     bootstrap.Modal.getInstance(document.getElementById("imageModal")).hide();
+    showToast("Đã chọn ảnh mới từ máy tính", "info");
   };
 };
 
@@ -278,6 +282,11 @@ const saveImage = async () => {
     const uploadResult = await uploadResponse.json();
     if (uploadResult.success) {
       showToast(uploadResult.message);
+      // Cập nhật currentImageId với ID của ảnh mới
+      if (uploadResult.imageId) {
+        currentImageId = parseInt(uploadResult.imageId, 10);
+        console.log("Đã lưu ảnh mới với ID:", currentImageId);
+      }
       loadSavedImages();
     } else {
       showToast(uploadResult.message, "danger");
@@ -302,9 +311,25 @@ const updateImage = async () => {
     showToast("Vui lòng chọn ảnh trước khi cập nhật!", "warning");
     return;
   }
+  const params = new URLSearchParams(window.location.search);
+  const tempImageId = params.get("imageId");
+  currentImageId = parseInt(tempImageId, 10);
 
-  if (!currentImageId) {
-    showToast("Vui lòng chọn một ảnh đã lưu để cập nhật!", "warning");
+  console.log(
+    "currentImageId trước khi kiểm tra:",
+    currentImageId,
+    "Kiểu dữ liệu:",
+    typeof currentImageId
+  );
+
+  // Kiểm tra xem currentImageId có phải là số hợp lệ không
+  if (
+    currentImageId === null ||
+    currentImageId === undefined ||
+    isNaN(currentImageId) ||
+    currentImageId <= 0
+  ) {
+    showToast("Vui lòng chọn một ảnh từ album của bạn để cập nhật!", "warning");
     return;
   }
 
@@ -351,7 +376,7 @@ const updateImage = async () => {
 
     const formData = new FormData();
     formData.append("file", editedFile);
-    formData.append("imageId", currentImageId);
+    formData.append("imageId", currentImageId.toString());
 
     const response = await fetch("/Home/UpdateImage", {
       method: "POST",
