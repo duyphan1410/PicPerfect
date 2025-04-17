@@ -36,7 +36,14 @@
                 </div>
             </div>
             <div class="preview-img">
-                <img src="~/img/image-placeholder.jpg" alt="preview-img">
+                @if (ViewBag.SelectedImage != null)
+                {
+                    <img src="@ViewBag.SelectedImage.ImagePath" alt="preview-img" id="previewImage" crossorigin="anonymous">
+                }
+                else
+                {
+                    <img src="~/img/image-placeholder.jpg" alt="preview-img" id="previewImage">
+                }
             </div>
         </div>
         <div class="controls">
@@ -115,21 +122,27 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOM fully loaded');
-            // Load script.js
-            var script = document.createElement('script');
-            script.src = '/js/script.js';
-            script.onload = function () {
-                console.log('script.js loaded successfully');
-            };
-            script.onerror = function () {
-                console.error('Error loading script.js');
-            };
-            document.body.appendChild(script);
-        });
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
-    </script>
+    @section Scripts {
+        <script src="~/js/script.js"></script>
+        <script>
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+
+            // Nếu có ảnh được chọn từ album, kích hoạt các công cụ chỉnh sửa
+            @if (ViewBag.SelectedImage != null)
+                {
+                    <text>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.querySelector('.container').classList.remove('disable');
+                        // Thêm xử lý lỗi CORS
+                        const previewImg = document.getElementById('previewImage');
+                        previewImg.onerror = function() {
+                            console.error('Error loading image');
+                        showToast('Không thể tải ảnh. Vui lòng thử lại.', 'error');
+                                    };
+                                });
+                    </text>
+            }
+        </script>
+    }
 </body>

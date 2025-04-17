@@ -22,50 +22,29 @@ let rotate = 0,
 // Biến để lưu trữ ID ảnh hiện tại
 let currentImageId = null;
 
-// Hàm hiển thị toast
+// Hàm hiển thị thông báo
 const showToast = (message, type = "success") => {
-  const toastContainer =
-    document.getElementById("toastContainer") ||
-    (() => {
-      const container = document.createElement("div");
-      container.id = "toastContainer";
-      container.style.position = "fixed";
-      container.style.top = "20px";
-      container.style.right = "20px";
-      container.style.zIndex = "9999";
-      document.body.appendChild(container);
-      return container;
-    })();
-
   const toast = document.createElement("div");
-  toast.className = `toast align-items-center border-0 bg-green text-white`;
-  toast.style.minWidth = "300px";
-  toast.style.fontSize = "16px";
-  toast.style.backgroundColor = "#28a745";
-  toast.style.color = "white";
-  toast.style.borderRadius = "8px";
-  toast.style.boxShadow = "0 0.5rem 1rem rgba(0, 0, 0, 0.15)";
-
+  toast.className = `toast align-items-center text-white bg-${type} border-0 position-absolute top-0 end-0 m-3`;
   toast.setAttribute("role", "alert");
   toast.setAttribute("aria-live", "assertive");
   toast.setAttribute("aria-atomic", "true");
-
+  toast.style.zIndex = "9999";
   toast.innerHTML = `
     <div class="d-flex">
-      <div class="toast-body" style="padding: 1rem;">
+      <div class="toast-body">
         ${message}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   `;
-
-  toastContainer.appendChild(toast);
+  document.body.appendChild(toast);
   const bsToast = new bootstrap.Toast(toast, {
-    delay: 1500,
+    animation: true,
     autohide: true,
+    delay: 3000,
   });
   bsToast.show();
-
   toast.addEventListener("hidden.bs.toast", () => {
     toast.remove();
   });
@@ -166,12 +145,17 @@ const loadSavedImages = async () => {
           (image) => `
         <div class="col-md-6 mb-3">
           <div class="card">
-            <img src="${image.imagePath}" class="card-img-top" alt="${image.imageName}" style="height: 150px; object-fit: cover;">
+            <img src="${image.imagePath}" class="card-img-top" alt="${
+            image.imageName
+          }" style="height: 150px; object-fit: cover;" crossorigin="anonymous">
             <div class="card-body">
-              <p class="card-text small">${image.imageName}</p>
+              <p class="card-text small">${
+                image.imageName || "Không có tên"
+              }</p>
               <button class="btn btn-sm btn-primary select-saved-image" 
                 data-url="${image.imagePath}"
-                data-id="${image.imageId}">
+                data-id="${image.imageId}"
+                data-name="${image.imageName || ""}">
                 Chọn ảnh này
               </button>
             </div>
@@ -184,7 +168,8 @@ const loadSavedImages = async () => {
       document.querySelectorAll(".select-saved-image").forEach((btn) => {
         btn.addEventListener("click", () => {
           const imageUrl = btn.dataset.url;
-          currentImageId = btn.dataset.id; // Lưu ID ảnh
+          currentImageId = btn.dataset.id;
+          const imageName = btn.dataset.name;
           previewImg.crossOrigin = "anonymous";
           previewImg.src = imageUrl;
           previewImg.onload = () => {
@@ -194,11 +179,15 @@ const loadSavedImages = async () => {
               document.getElementById("imageModal")
             ).hide();
           };
+          previewImg.onerror = () => {
+            showToast("Không thể tải ảnh. Vui lòng thử lại.", "error");
+          };
         });
       });
     }
   } catch (error) {
     console.error("Error loading saved images:", error);
+    showToast("Không thể tải danh sách ảnh. Vui lòng thử lại.", "error");
   }
 };
 
@@ -228,7 +217,7 @@ localImageInput.addEventListener("change", (e) => {
 
 const saveImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    showToast("Please select an image!", "warning");
+    showToast("Vui lòng chọn ảnh trước khi lưu!", "warning");
     return;
   }
 
@@ -236,10 +225,20 @@ const saveImage = async () => {
   loadingOverlay.style.display = "flex";
 
   try {
+    // Tạo một ảnh mới để load lại ảnh gốc
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = previewImg.src;
+    });
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = previewImg.naturalWidth;
-    canvas.height = previewImg.naturalHeight;
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
 
     ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
     ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -248,7 +247,7 @@ const saveImage = async () => {
     }
     ctx.scale(flipHorizontal, flipVertical);
     ctx.drawImage(
-      previewImg,
+      img,
       -canvas.width / 2,
       -canvas.height / 2,
       canvas.width,
@@ -258,24 +257,30 @@ const saveImage = async () => {
     const blob = await new Promise((resolve) =>
       canvas.toBlob(resolve, "image/jpeg", 0.95)
     );
-    const editedFile = new File([blob], "edited_image.jpg", {
+
+    // Lấy số thứ tự ảnh hiện tại
+    const response = await fetch("/Home/GetUserImages");
+    const result = await response.json();
+    const imageCount = result.success ? result.images.length + 1 : 1;
+
+    const editedFile = new File([blob], `img_${imageCount}.jpg`, {
       type: "image/jpeg",
     });
 
     const formData = new FormData();
     formData.append("file", editedFile);
 
-    const response = await fetch("/Home/UploadImage", {
+    const uploadResponse = await fetch("/Home/UploadImage", {
       method: "POST",
       body: formData,
     });
 
-    const result = await response.json();
-    if (result.success) {
-      showToast(result.message);
+    const uploadResult = await uploadResponse.json();
+    if (uploadResult.success) {
+      showToast(uploadResult.message);
       loadSavedImages();
     } else {
-      showToast(result.message, "danger");
+      showToast(uploadResult.message, "danger");
     }
   } catch (error) {
     console.error("Error saving image:", error);
@@ -284,12 +289,6 @@ const saveImage = async () => {
     loadingOverlay.style.display = "none";
   }
 };
-
-resetFilterBtn.addEventListener("click", resetFilter);
-filterSlider.addEventListener("input", updateFilter);
-
-console.log("Adding click event listener to save button");
-console.log("Save button element:", saveImgBtn);
 
 // Cập nhật event listener cho nút save
 document.querySelector(".save-img").addEventListener("click", (e) => {
@@ -313,10 +312,20 @@ const updateImage = async () => {
   loadingOverlay.style.display = "flex";
 
   try {
+    // Tạo một ảnh mới để load lại ảnh gốc
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = previewImg.src;
+    });
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = previewImg.naturalWidth;
-    canvas.height = previewImg.naturalHeight;
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
 
     ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
     ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -325,7 +334,7 @@ const updateImage = async () => {
     }
     ctx.scale(flipHorizontal, flipVertical);
     ctx.drawImage(
-      previewImg,
+      img,
       -canvas.width / 2,
       -canvas.height / 2,
       canvas.width,
@@ -335,7 +344,8 @@ const updateImage = async () => {
     const blob = await new Promise((resolve) =>
       canvas.toBlob(resolve, "image/jpeg", 0.95)
     );
-    const editedFile = new File([blob], "edited_image.jpg", {
+
+    const editedFile = new File([blob], `img_${currentImageId}.jpg`, {
       type: "image/jpeg",
     });
 
@@ -351,6 +361,10 @@ const updateImage = async () => {
     const result = await response.json();
     if (result.success) {
       showToast(result.message);
+      // Cập nhật lại ảnh hiện tại với URL mới
+      if (result.imageUrl) {
+        previewImg.src = result.imageUrl;
+      }
       loadSavedImages();
     } else {
       showToast(result.message, "danger");
@@ -369,141 +383,62 @@ document.querySelector(".update-img").addEventListener("click", (e) => {
   updateImage();
 });
 
-document.querySelector(".download-img").addEventListener("click", (e) => {
-  e.preventDefault();
-  if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    showToast("Vui lòng chọn ảnh trước!", "warning");
-    return;
-  }
-  downloadImage();
-  // Sẽ thêm chức năng sau
-  console.log("Download image clicked");
-});
-
 // Thêm hàm downloadImage
-const downloadImage = () => {
+const downloadImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
     showToast("Vui lòng chọn ảnh trước khi tải xuống!", "warning");
     return;
   }
 
-  // Tạo canvas với ảnh đã chỉnh sửa
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = previewImg.naturalWidth;
-  canvas.height = previewImg.naturalHeight;
+  try {
+    // Tạo một ảnh mới để load lại ảnh gốc
+    const img = new Image();
+    img.crossOrigin = "anonymous";
 
-  // Áp dụng các hiệu ứng đã chỉnh sửa
-  ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  if (rotate !== 0) {
-    ctx.rotate((rotate * Math.PI) / 180);
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = previewImg.src;
+    });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    if (rotate !== 0) {
+      ctx.rotate((rotate * Math.PI) / 180);
+    }
+    ctx.scale(flipHorizontal, flipVertical);
+    ctx.drawImage(
+      img,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    );
+
+    // Tạo link tải xuống
+    const link = document.createElement("a");
+    link.download = "edited_image.jpg";
+    link.href = canvas.toDataURL("image/jpeg", 0.95);
+    link.click(); // Tự động kích hoạt tải xuống
+  } catch (error) {
+    console.error("Error downloading image:", error);
+    showToast("Có lỗi xảy ra khi tải ảnh", "danger");
   }
-  ctx.scale(flipHorizontal, flipVertical);
-  ctx.drawImage(
-    previewImg,
-    -canvas.width / 2,
-    -canvas.height / 2,
-    canvas.width,
-    canvas.height
-  );
-
-  // Tạo link tải xuống
-  const link = document.createElement("a");
-  link.download = "edited_image.jpg";
-  link.href = canvas.toDataURL("image/jpeg", 0.95);
-  link.click(); // Tự động kích hoạt tải xuống
 };
 
-// // Cập nhật event listener cho nút download
-// document.querySelector(".download-img").addEventListener("click", (e) => {
-//   e.preventDefault();
-//   downloadImage();
-// });
+// Cập nhật event listener cho nút download
+document.querySelector(".download-img").addEventListener("click", (e) => {
+  e.preventDefault();
+  downloadImage();
+});
 
-//Drawing
+// Thêm event listener cho slider
+filterSlider.addEventListener("input", updateFilter);
 
-//const canvas = document.querySelector("canvas"),
-//toolBtns = document.querySelectorAll(".tool"),
-//fillColor = document.querySelector("#fill-color"),
-//sizeSlider = document.querySelector("#size-slider"),
-//colorBtns = document.querySelectorAll(".colors .option"),
-//colorPicker = document.querySelector("#color-picker"),
-//clearCanvas = document.querySelector(".clear-canvas"),
-//ctx = canvas.getContext("2d");
-
-//// global variables with default value
-//let prevMouseX, prevMouseY, snapshot,
-//isDrawing = false,
-//selectedTool = "brush",
-//brushWidth = 5,
-//selectedColor = "#000";
-
-//const setCanvasBackground = () => {
-//    // setting whole canvas background to white, so the downloaded img background will be white
-//    ctx.fillStyle = "#fff";
-//    ctx.fillRect(0, 0, canvas.width, canvas.height);
-//    ctx.fillStyle = selectedColor; // setting fillstyle back to the selectedColor, it'll be the brush color
-//}
-
-//window.addEventListener("load", () => {
-//    // setting canvas width/height.. offsetwidth/height returns viewable width/height of an element
-//    canvas.width = canvas.offsetWidth;
-//    canvas.height = canvas.offsetHeight;
-//    setCanvasBackground();
-//});
-
-//const startDraw = (e) => {
-//    isDrawing = true;
-//    prevMouseX = e.offsetX; // passing current mouseX position as prevMouseX value
-//    prevMouseY = e.offsetY; // passing current mouseY position as prevMouseY value
-//    ctx.beginPath(); // creating new path to draw
-//    ctx.lineWidth = brushWidth; // passing brushSize as line width
-//    ctx.fillStyle = selectedColor; // passing selectedColor as fill style
-//    // copying canvas data & passing as snapshot value.. this avoids dragging the image
-//    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-//}
-
-//const drawing = (e) => {
-//    if(!isDrawing) return; // if isDrawing is false return from here
-//    ctx.putImageData(snapshot, 0, 0); // adding copied canvas data on to this canvas
-
-//    if(selectedTool === "brush" || selectedTool === "eraser") {
-//        ctx.strokeStyle = selectedTool === "eraser" ? "#fff" : selectedColor;
-//        ctx.lineTo(e.offsetX, e.offsetY); // creating line according to the mouse pointer
-//        ctx.stroke(); // drawing/filling line with color
-//    }
-//}
-
-//toolBtns.forEach(btn => {
-//    btn.addEventListener("click", () => { // adding click event to all tool option
-//        // removing active class from the previous option and adding on current clicked option
-//        document.querySelector(".options .active").classList.remove("active");
-//        btn.classList.add("active");
-//        selectedTool = btn.id;
-//    });
-//});
-
-//sizeSlider.addEventListener("change", () => brushWidth = sizeSlider.value);
-
-//colorBtns.forEach(btn => {
-//    btn.addEventListener("click", () => {
-//        document.querySelector(".options .selected").classList.remove("selected");
-//        btn.classList.add("selected");
-//        selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color");
-//    });
-//});
-
-//colorPicker.addEventListener("change", () => {
-//    colorPicker.parentElement.style.background = colorPicker.value;
-//    colorPicker.parentElement.click();
-//});
-
-//clearCanvas.addEventListener("click", () => {
-//    ctx.clearRect(0, 0, canvas.width, canvas.height); // clearing whole canvas
-//    setCanvasBackground();
-//});
-
-//canvas.addEventListener("mousedown", startDraw);
-//canvas.addEventListener("mousemove", drawing);
-//canvas.addEventListener("mouseup", () => isDrawing = false);
+// Thêm event listener cho nút reset
+resetFilterBtn.addEventListener("click", resetFilter);
