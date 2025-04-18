@@ -6,25 +6,25 @@
 }
 
 <div class="container pt-5">
-    <h2>Tạo Album Mới</h2>
+    <h2>Create New Album</h2>
 
     <form asp-action="Create" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-group">
-            <label asp-for="AlbumName">Tên Album</label>
+            <label asp-for="AlbumName">Album Name</label>
             <input asp-for="AlbumName" class="form-control" />
             <span asp-validation-for="AlbumName" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="Description">Mô tả</label>
+            <label asp-for="Description">Description</label>
             <textarea asp-for="Description" class="form-control" rows="3"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label>Chọn ảnh bìa</label>
+            <label>Choose cover image</label>
             <div class="card">
                 <div class="card-body scrollable-container">
                     <div class="row">
@@ -40,8 +40,7 @@
                                             <div class="form-check">
                                                 <input type="radio" name="CoverImage" value="@image.ImagePath"
                                                     class="form-check-input image-checkbox" id="image_@image.ImageId">
-                                                <label class="form-check-label" for="image_@image.ImageId">Chọn làm ảnh
-                                                    bìa</label>
+                                                <label class="form-check-label" for="image_@image.ImageId">Choose</label>
                                             </div>
                                         </div>
                                     </div>
@@ -51,7 +50,7 @@
                         else
                         {
                             <div class="col-12 text-center">
-                                <p class="text-muted">Bạn chưa có ảnh nào để chọn làm ảnh bìa.</p>
+                                <p class="text-muted">You don't have any images to choose as a cover image.</p>
                             </div>
                         }
                     </div>
@@ -64,8 +63,8 @@
         <input type="hidden" asp-for="NumberOfImage" value="1" />
 
         <div class="form-group mt-3">
-            <input type="submit" value="Tạo Album" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            <input type="submit" value="Create Album" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back</a>
         </div>
     </form>
 </div>
