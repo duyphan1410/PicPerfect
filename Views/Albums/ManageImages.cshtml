@@ -1,0 +1,203 @@
+@{
+    ViewData["Title"] = "Quản lý ảnh trong album";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var album = ViewBag.Album as PicPerfect.Models.Album;
+}
+
+<div class="container-fluid pt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản lý ảnh trong album: @album.AlbumName</h2>
+        <div>
+            <button type="submit" form="addImageForm" class="btn btn-primary btn-lg">Thêm ảnh đã chọn</button>
+            <a asp-action="Details" asp-route-id="@album.AlbumId" class="btn btn-secondary btn-lg ms-2">Quay lại</a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Ảnh trong album</h3>
+                </div>
+                <div class="card-body scrollable-container">
+                    <div class="row">
+                        @if (album.AlbumImages != null && album.AlbumImages.Any())
+                        {
+                            @foreach (var albumImage in album.AlbumImages)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <img src="@albumImage.Image.ImagePath" class="card-img-top" alt="@albumImage.Image.ImageName"
+                                            style="height: 250px; object-fit: cover;">
+                                        <div class="card-body p-2 text-center">
+                                            <form asp-action="RemoveImage" method="post">
+                                                <input type="hidden" name="id" value="@album.AlbumId" />
+                                                <input type="hidden" name="imageId" value="@albumImage.ImageId" />
+                                                <button type="submit" class="btn btn-danger btn-sm w-100">Xóa khỏi album</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center">
+                                <p class="text-muted">Album này chưa có ảnh nào.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Thêm ảnh vào album</h3>
+                </div>
+                <div class="card-body scrollable-container">
+                    <form asp-action="AddImage" method="post" id="addImageForm">
+                        <input type="hidden" name="id" value="@album.AlbumId" />
+                        <div class="row">
+                            @if (ViewBag.UserImages != null && ViewBag.UserImages.Count > 0)
+                            {
+                                @foreach (var image in ViewBag.UserImages)
+                                {
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card h-100 image-select-card" data-image-id="@image.ImageId">
+                                            <img src="@image.ImagePath" class="card-img-top" alt="@image.ImageName"
+                                                style="height: 250px; object-fit: cover;">
+                                            <div class="card-body p-2 text-center">
+                                                <div class="form-check">
+                                                    <input type="checkbox" name="selectedImages" value="@image.ImageId"
+                                                        class="form-check-input image-checkbox" id="image_@image.ImageId">
+                                                    <label class="form-check-label" for="image_@image.ImageId">Chọn ảnh</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center">
+                                    <p class="text-muted">Bạn chưa có ảnh nào để thêm vào album.</p>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .scrollable-container {
+        height: calc(100vh - 300px);
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    .image-select-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .image-select-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .image-select-card.selected {
+        border-color: #28a745;
+    }
+    
+    .card-header {
+        border-bottom: none;
+    }
+    
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        height: calc(100vh - 163px);
+    }
+    
+    .btn {
+        border-radius: 5px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý khi click vào card ảnh
+            const imageCards = document.querySelectorAll('.image-select-card');
+            imageCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Nếu click vào checkbox, không làm gì cả
+                    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
+                        return;
+                    }
+                    
+                    const checkbox = this.querySelector('.image-checkbox');
+                    checkbox.checked = !checkbox.checked;
+                    
+                    if (checkbox.checked) {
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.remove('selected');
+                    }
+                });
+            });
+            
+            // Xử lý khi checkbox thay đổi
+            const checkboxes = document.querySelectorAll('.image-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const card = this.closest('.image-select-card');
+                    if (this.checked) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                });
+            });
+        });
+    </script>
+}
