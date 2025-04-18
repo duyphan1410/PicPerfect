@@ -6,33 +6,31 @@
 }
 
 <div class="container">
-    <h1>Chi tiết Album</h1>
+    <h1>Album detail</h1>
     <hr />
 
     <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Thông tin Album</h3>
-        </div>
+
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <dl class="row">
-                        <dt class="col-sm-4">Tên Album</dt>
+                        <dt class="col-sm-4"> Name</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.AlbumName)</dd>
 
-                        <dt class="col-sm-4">Mô tả</dt>
+                        <dt class="col-sm-4">Desc</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
 
-                        <dt class="col-sm-4">Ngày tạo</dt>
+                        <dt class="col-sm-4">Date</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.CreationDate)</dd>
 
-                        <dt class="col-sm-4">Số ảnh</dt>
+                        <dt class="col-sm-4">Images</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.NumberOfImage)</dd>
                     </dl>
                 </div>
                 <div class="col-md-6">
                     <div class="text-center">
-                        <h5>Ảnh bìa</h5>
+                        <h5>Cover image</h5>
                         <div class="cover-image-container mx-auto">
                             <img src="@Model.CoverImage" alt="Cover Image" class="cover-image" />
                         </div>
@@ -42,13 +40,13 @@
 
             <div class="mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4>Danh sách ảnh trong album</h4>
+                    <h4>Image list</h4>
                     <div class="btn-group">
-                        <button class="btn btn-outline-primary" id="gridViewBtn">
-                            <i class="fas fa-th"></i> Xem dạng lưới
+                        <button class="btn btn-outline-primary text-white" id="gridViewBtn">
+                            <i class="fas fa-th"></i> Grid view
                         </button>
-                        <button class="btn btn-outline-primary" id="listViewBtn">
-                            <i class="fas fa-list"></i> Xem dạng danh sách
+                        <button class="btn btn-outline-primary text-white" id="listViewBtn">
+                            <i class="fas fa-list"></i> List view
                         </button>
                     </div>
                 </div>
@@ -85,11 +83,15 @@
                                     </div>
                                     <div class="btn-group">
                                         <button class="btn btn-sm btn-primary edit-image" data-image-id="@albumImage.ImageId">
-                                            <i class="fas fa-edit"></i> Chỉnh sửa
+                                            <i class="fas fa-edit"></i> Edit
                                         </button>
-                                        <button class="btn btn-sm btn-danger delete-image" data-image-id="@albumImage.ImageId">
-                                            <i class="fas fa-trash"></i> Xóa
-                                        </button>
+                                        <form asp-action="RemoveImage" method="post" style="display: inline;">
+                                            <input type="hidden" name="id" value="@Model.AlbumId" />
+                                            <input type="hidden" name="imageId" value="@albumImage.ImageId" />
+                                            <button type="submit" class="btn btn-sm btn-danger delete-image">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             }
@@ -103,9 +105,9 @@
             </div>
 
             <div class="mt-4">
-                <a asp-action="ManageImages" asp-route-id="@Model.AlbumId" class="btn btn-primary">Thêm ảnh</a>
-                <a asp-action="Edit" asp-route-id="@Model.AlbumId" class="btn btn-secondary">Chỉnh sửa</a>
-                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+                <a asp-action="ManageImages" asp-route-id="@Model.AlbumId" class="btn btn-primary">Add image</a>
+                <a asp-action="Edit" asp-route-id="@Model.AlbumId" class="btn btn-secondary">Edit</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Go back</a>
             </div>
         </div>
     </div>
@@ -124,12 +126,16 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary edit-image-modal">
-                    <i class="fas fa-edit"></i> Chỉnh sửa
+                    <i class="fas fa-edit"></i> Edit
                 </button>
-                <button type="button" class="btn btn-danger delete-image-modal">
-                    <i class="fas fa-trash"></i> Xóa
-                </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <form asp-action="RemoveImage" method="post" style="display: inline;">
+                    <input type="hidden" name="id" value="@Model.AlbumId" />
+                    <input type="hidden" name="imageId" id="modalImageId" />
+                    <button type="submit" class="btn btn-danger delete-image-modal">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Exit</button>
             </div>
         </div>
     </div>
@@ -211,7 +217,8 @@
                 var imagePath = $(this).data('image-path');
                 var imageId = $(this).data('image-id');
                 $('#modalImage').attr('src', imagePath);
-                $('.edit-image-modal, .delete-image-modal').data('image-id', imageId);
+                $('.edit-image-modal').data('image-id', imageId);
+                $('#modalImageId').val(imageId);
                 $('#imageModal').modal('show');
             });
 
@@ -225,25 +232,8 @@
             // Xử lý nút xóa trong modal
             $('.delete-image-modal, .delete-image').click(function (e) {
                 e.stopPropagation();
-                var imageId = $(this).data('image-id');
-                if (confirm('Bạn có chắc chắn muốn xóa ảnh này?')) {
-                    $.ajax({
-                        url: '/Images/Delete/' + imageId,
-                        type: 'POST',
-                        data: {
-                            "__RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        success: function (result) {
-                            if (result.success) {
-                                location.reload();
-                            } else {
-                                alert('Có lỗi xảy ra khi xóa ảnh');
-                            }
-                        },
-                        error: function () {
-                            alert('Có lỗi xảy ra khi xóa ảnh');
-                        }
-                    });
+                if (confirm('Bạn có chắc chắn muốn xóa ảnh này khỏi album?')) {
+                    $(this).closest('form').submit();
                 }
             });
         });

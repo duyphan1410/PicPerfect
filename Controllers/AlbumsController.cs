@@ -418,7 +418,7 @@ namespace PicPerfect.Controllers
                 TempData["SuccessMessage"] = "Đã xóa ảnh khỏi album thành công!";
             }
 
-            return RedirectToAction(nameof(ManageImages), new { id = id });
+            return RedirectToAction(nameof(Details), new { id = id });
         }
 
         private bool AlbumExists(int id)
