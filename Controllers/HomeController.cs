@@ -27,7 +27,7 @@ namespace PicPerfect.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? imageId = null)
         {
             var username = HttpContext.Session.GetString("username");
             if (!string.IsNullOrEmpty(username))
@@ -46,6 +46,18 @@ namespace PicPerfect.Controllers
                         .ToListAsync();
 
                     ViewBag.UserImages = userImages;
+
+                    // Nếu có imageId, lấy thông tin ảnh được chọn
+                    if (imageId.HasValue)
+                    {
+                        var selectedImage = await _context.Images
+                            .FirstOrDefaultAsync(i => i.ImageId == imageId && i.UserId == user.UserId);
+
+                        if (selectedImage != null)
+                        {
+                            ViewBag.SelectedImage = selectedImage;
+                        }
+                    }
                 }
             }
             return View();
@@ -66,13 +78,7 @@ namespace PicPerfect.Controllers
                 var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
                 {
-                    return Json(new { success = false, message = "Định dạng file không được hỗ trợ. Chỉ chấp nhận: jpg, jpeg, png, gif" });
-                }
-
-                // Kiểm tra kích thước file (tối đa 10MB)
-                if (file.Length > 10 * 1024 * 1024)
-                {
-                    return Json(new { success = false, message = "File quá lớn. Kích thước tối đa là 10MB" });
+                    return Json(new { success = false, message = "Định dạng file không được hỗ trợ" });
                 }
 
                 // Upload ảnh lên Cloudinary
@@ -98,8 +104,8 @@ namespace PicPerfect.Controllers
 
                 var image = new Images
                 {
-
                     ImagePath = uploadResult.SecureUrl.ToString(),
+                    ImageName = file.FileName,
                     UploadDatetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     UserId = user.UserId
                 };
@@ -112,13 +118,14 @@ namespace PicPerfect.Controllers
                     success = true,
                     message = "Upload ảnh thành công",
                     imageUrl = uploadResult.SecureUrl.ToString(),
-                    imageId = image.ImageId
+                    imageId = image.ImageId,
+                    imageName = image.ImageName
                 });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi khi upload ảnh");
-                return Json(new { success = false, message = "Có lỗi xảy ra khi upload ảnh: " + ex.Message });
+                return Json(new { success = false, message = "Có lỗi xảy ra khi upload ảnh" });
             }
         }
 
@@ -201,12 +208,8 @@ namespace PicPerfect.Controllers
                     return Json(new { success = false, message = "Không tìm thấy ảnh cần cập nhật" });
                 }
 
-                // Lấy public_id từ URL cũ
-                var uri = new Uri(existingImage.ImagePath);
-                var publicId = Path.GetFileNameWithoutExtension(uri.LocalPath);
-
-                // Upload ảnh mới với public_id cũ
-                var uploadResult = await _photoServices.UpdatePhotoAsync(file, publicId);
+                // Upload ảnh mới lên Cloudinary
+                var uploadResult = await _photoServices.AddPhotoAsync(file);
 
                 if (uploadResult.Error != null)
                 {
@@ -215,6 +218,7 @@ namespace PicPerfect.Controllers
 
                 // Cập nhật URL mới trong database
                 existingImage.ImagePath = uploadResult.SecureUrl.ToString();
+                existingImage.ImageName = file.FileName;
                 existingImage.UploadDatetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 await _context.SaveChangesAsync();
 
@@ -222,7 +226,8 @@ namespace PicPerfect.Controllers
                 {
                     success = true,
                     message = "Cập nhật ảnh thành công",
-                    imageUrl = uploadResult.SecureUrl.ToString()
+                    imageUrl = uploadResult.SecureUrl.ToString(),
+                    imageName = existingImage.ImageName
                 });
             }
             catch (Exception ex)

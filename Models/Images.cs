@@ -12,18 +12,8 @@ namespace PicPerfect.Models
         public int ImageId { get; set; }
         [ForeignKey(nameof(Users))]
         public int UserId { get; set; }
-        public string UploadDatetime { get; set; }
-        public string ImagePath { get; set; }
-        [NotMapped] // Không cần ánh xạ thuộc tính này với cột trong cơ sở dữ liệu
-        public string ImageName
-        {
-            get
-            {
-                // Tạo tên hình ảnh dựa trên số lượng hình ảnh đã lưu
-                int imageCount = _context.Images.Count(img => img.UserId == UserId);
-                return $"image{imageCount + 1}";
-            }
-        }
-
+        public string? UploadDatetime { get; set; }
+        public required string ImagePath { get; set; }
+        public string? ImageName { get; set; }
     }
 }

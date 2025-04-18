@@ -24,7 +24,7 @@
     <header>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home">PicPerfect</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PicPerfect</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -33,13 +33,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" asp-area="" asp-controller="Home">Home</a>
+                            <a class="nav-link active" aria-current="page" asp-area="" asp-controller="Home"
+                                asp-action="Index">Home</a>
                         </li>
                         @if (ViewBag.FullName != null)
                         {
                             <li class="nav-item">
-
-                                <a href="@Url.Action("Index", "Albums")" class="nav-link">Album</a>
+                                <a class="nav-link" asp-controller="Albums" asp-action="Index">Album</a>
                             </li>
                         }
                         <li class="nav-item dropdown">

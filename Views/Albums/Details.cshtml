@@ -1,55 +1,241 @@
 ﻿@model PicPerfect.Models.Album
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Album";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Album</h4>
+<div class="container">
+    <h1>Album detail</h1>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AlbumName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AlbumName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreationDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreationDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatorUserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatorUserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfImage)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CoverImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CoverImage)
-        </dd>
-    </dl>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4"> Name</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.AlbumName)</dd>
+
+                        <dt class="col-sm-4">Desc</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
+
+                        <dt class="col-sm-4">Date</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.CreationDate)</dd>
+
+                        <dt class="col-sm-4">Images</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.NumberOfImage)</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <h5>Cover image</h5>
+                        <div class="cover-image-container mx-auto">
+                            <img src="@Model.CoverImage" alt="Cover Image" class="cover-image" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Image list</h4>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary text-white" id="gridViewBtn">
+                            <i class="fas fa-th"></i> Grid view
+                        </button>
+                        <button class="btn btn-outline-primary text-white" id="listViewBtn">
+                            <i class="fas fa-list"></i> List view
+                        </button>
+                    </div>
+                </div>
+
+                <div id="gridView" class="album-thumbnails">
+                    @if (Model.AlbumImages != null && Model.AlbumImages.Any())
+                    {
+                        @foreach (var albumImage in Model.AlbumImages)
+                        {
+                            <div class="thumbnail-item" data-image-id="@albumImage.ImageId"
+                                data-image-path="@albumImage.Image.ImagePath">
+                                <img src="@albumImage.Image.ImagePath" alt="@albumImage.Image.ImageName" />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Album này chưa có ảnh nào.</p>
+                    }
+                </div>
+
+                <div id="listView" class="album-list d-none">
+                    @if (Model.AlbumImages != null && Model.AlbumImages.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var albumImage in Model.AlbumImages)
+                            {
+                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                    data-image-id="@albumImage.ImageId" data-image-path="@albumImage.Image.ImagePath">
+                                    <div class="d-flex align-items-center">
+                                        <img src="@albumImage.Image.ImagePath" alt="@albumImage.Image.ImageName" class="me-3"
+                                            style="width: 50px; height: 50px; object-fit: cover;" />
+                                        <span>@albumImage.Image.ImageName</span>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary edit-image" data-image-id="@albumImage.ImageId">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <form asp-action="RemoveImage" method="post" style="display: inline;">
+                                            <input type="hidden" name="id" value="@Model.AlbumId" />
+                                            <input type="hidden" name="imageId" value="@albumImage.ImageId" />
+                                            <button type="submit" class="btn btn-sm btn-danger delete-image">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Album này chưa có ảnh nào.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="ManageImages" asp-route-id="@Model.AlbumId" class="btn btn-primary">Add image</a>
+                <a asp-action="Edit" asp-route-id="@Model.AlbumId" class="btn btn-secondary">Edit</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Go back</a>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AlbumId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<!-- Modal hiển thị ảnh -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Xem ảnh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" alt="Full size image" class="img-fluid" id="modalImage" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary edit-image-modal">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <form asp-action="RemoveImage" method="post" style="display: inline;">
+                    <input type="hidden" name="id" value="@Model.AlbumId" />
+                    <input type="hidden" name="imageId" id="modalImageId" />
+                    <button type="submit" class="btn btn-danger delete-image-modal">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Exit</button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .cover-image-container {
+        width: 50%;
+        max-width: 400px;
+    }
+
+    .cover-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .album-thumbnails {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .thumbnail-item {
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .thumbnail-item:hover {
+        transform: scale(1.05);
+    }
+
+    .thumbnail-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .album-list .list-group-item {
+        transition: background-color 0.3s ease;
+    }
+
+    .album-list .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .album-list img {
+        border-radius: 4px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Xử lý chuyển đổi giữa chế độ xem lưới và danh sách
+            $('#gridViewBtn').click(function () {
+                $('#gridView').removeClass('d-none');
+                $('#listView').addClass('d-none');
+                $(this).addClass('active');
+                $('#listViewBtn').removeClass('active');
+            });
+
+            $('#listViewBtn').click(function () {
+                $('#listView').removeClass('d-none');
+                $('#gridView').addClass('d-none');
+                $(this).addClass('active');
+                $('#gridViewBtn').removeClass('active');
+            });
+
+            // Xử lý hiển thị modal khi click vào ảnh
+            $('.thumbnail-item, .list-group-item').click(function () {
+                var imagePath = $(this).data('image-path');
+                var imageId = $(this).data('image-id');
+                $('#modalImage').attr('src', imagePath);
+                $('.edit-image-modal').data('image-id', imageId);
+                $('#modalImageId').val(imageId);
+                $('#imageModal').modal('show');
+            });
+
+            // Xử lý nút chỉnh sửa trong modal
+            $('.edit-image-modal, .edit-image').click(function (e) {
+                e.stopPropagation();
+                var imageId = $(this).data('image-id');
+                window.location.href = '/Home/Index?imageId=' + imageId;
+            });
+
+            // Xử lý nút xóa trong modal
+            $('.delete-image-modal, .delete-image').click(function (e) {
+                e.stopPropagation();
+                if (confirm('Bạn có chắc chắn muốn xóa ảnh này khỏi album?')) {
+                    $(this).closest('form').submit();
+                }
+            });
+        });
+    </script>
+}
