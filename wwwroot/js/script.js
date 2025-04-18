@@ -22,6 +22,21 @@ let rotate = 0,
 // Biến để lưu trữ ID ảnh hiện tại
 let currentImageId = null;
 
+// Hàm lấy imageId từ URL
+const getImageIdFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  const imageId = params.get("imageId");
+  if (imageId) {
+    currentImageId = parseInt(imageId, 10);
+    console.log("Đã lấy imageId từ URL:", currentImageId);
+  }
+};
+
+// Gọi hàm khi trang được load
+document.addEventListener("DOMContentLoaded", () => {
+  getImageIdFromUrl();
+});
+
 // Hàm hiển thị thông báo
 const showToast = (message, type = "success") => {
   const toast = document.createElement("div");
@@ -156,7 +171,7 @@ const loadSavedImages = async () => {
                 data-url="${image.imagePath}"
                 data-id="${image.imageId}"
                 data-name="${image.imageName || ""}">
-                Chọn ảnh này
+                Choose image
               </button>
             </div>
           </div>
@@ -181,14 +196,14 @@ const loadSavedImages = async () => {
             ).hide();
           };
           previewImg.onerror = () => {
-            showToast("Không thể tải ảnh. Vui lòng thử lại.", "error");
+            showToast("Cannot load image. Please try again.", "error");
           };
         });
       });
     }
   } catch (error) {
     console.error("Error loading saved images:", error);
-    showToast("Không thể tải danh sách ảnh. Vui lòng thử lại.", "error");
+    showToast("Cant not find image in your cloud", "error");
   }
 };
 
@@ -202,7 +217,7 @@ const handleLocalImageSelect = (file) => {
     resetFilterBtn.click();
     document.querySelector(".container").classList.remove("disable");
     bootstrap.Modal.getInstance(document.getElementById("imageModal")).hide();
-    showToast("Đã chọn ảnh mới từ máy tính", "info");
+    showToast("Image has been selected", "info");
   };
 };
 
@@ -221,7 +236,7 @@ localImageInput.addEventListener("change", (e) => {
 
 const saveImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    showToast("Vui lòng chọn ảnh trước khi lưu!", "warning");
+    showToast("Please select an image to save", "warning");
     return;
   }
 
@@ -241,8 +256,15 @@ const saveImage = async () => {
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+
+    // Điều chỉnh kích thước canvas dựa trên góc xoay
+    if (Math.abs(rotate) === 90 || Math.abs(rotate) === 270) {
+      canvas.width = img.naturalHeight;
+      canvas.height = img.naturalWidth;
+    } else {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+    }
 
     ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
     ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -252,10 +274,10 @@ const saveImage = async () => {
     ctx.scale(flipHorizontal, flipVertical);
     ctx.drawImage(
       img,
-      -canvas.width / 2,
-      -canvas.height / 2,
-      canvas.width,
-      canvas.height
+      -img.naturalWidth / 2,
+      -img.naturalHeight / 2,
+      img.naturalWidth,
+      img.naturalHeight
     );
 
     const blob = await new Promise((resolve) =>
@@ -293,7 +315,7 @@ const saveImage = async () => {
     }
   } catch (error) {
     console.error("Error saving image:", error);
-    showToast("Có lỗi xảy ra khi lưu ảnh", "danger");
+    showToast("An error occurred while saving the image", "danger");
   } finally {
     loadingOverlay.style.display = "none";
   }
@@ -308,12 +330,9 @@ document.querySelector(".save-img").addEventListener("click", (e) => {
 // Thêm hàm updateImage
 const updateImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    showToast("Vui lòng chọn ảnh trước khi cập nhật!", "warning");
+    showToast("Please select an image to update", "warning");
     return;
   }
-  const params = new URLSearchParams(window.location.search);
-  const tempImageId = params.get("imageId");
-  currentImageId = parseInt(tempImageId, 10);
 
   console.log(
     "currentImageId trước khi kiểm tra:",
@@ -329,7 +348,7 @@ const updateImage = async () => {
     isNaN(currentImageId) ||
     currentImageId <= 0
   ) {
-    showToast("Vui lòng chọn một ảnh từ album của bạn để cập nhật!", "warning");
+    showToast("Please select an image from your album to update", "warning");
     return;
   }
 
@@ -349,8 +368,15 @@ const updateImage = async () => {
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+
+    // Điều chỉnh kích thước canvas dựa trên góc xoay
+    if (Math.abs(rotate) === 90 || Math.abs(rotate) === 270) {
+      canvas.width = img.naturalHeight;
+      canvas.height = img.naturalWidth;
+    } else {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+    }
 
     ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
     ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -360,10 +386,10 @@ const updateImage = async () => {
     ctx.scale(flipHorizontal, flipVertical);
     ctx.drawImage(
       img,
-      -canvas.width / 2,
-      -canvas.height / 2,
-      canvas.width,
-      canvas.height
+      -img.naturalWidth / 2,
+      -img.naturalHeight / 2,
+      img.naturalWidth,
+      img.naturalHeight
     );
 
     const blob = await new Promise((resolve) =>
@@ -396,7 +422,7 @@ const updateImage = async () => {
     }
   } catch (error) {
     console.error("Error updating image:", error);
-    showToast("Có lỗi xảy ra khi cập nhật ảnh", "danger");
+    showToast("An error occurred while updating the image", "danger");
   } finally {
     loadingOverlay.style.display = "none";
   }
@@ -411,7 +437,7 @@ document.querySelector(".update-img").addEventListener("click", (e) => {
 // Thêm hàm downloadImage
 const downloadImage = async () => {
   if (!previewImg.src || previewImg.src.includes("image-placeholder.jpg")) {
-    showToast("Vui lòng chọn ảnh trước khi tải xuống!", "warning");
+    showToast("Please select an image to download", "warning");
     return;
   }
 
@@ -428,8 +454,15 @@ const downloadImage = async () => {
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+
+    // Điều chỉnh kích thước canvas dựa trên góc xoay
+    if (Math.abs(rotate) === 90 || Math.abs(rotate) === 270) {
+      canvas.width = img.naturalHeight;
+      canvas.height = img.naturalWidth;
+    } else {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+    }
 
     ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
     ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -439,10 +472,10 @@ const downloadImage = async () => {
     ctx.scale(flipHorizontal, flipVertical);
     ctx.drawImage(
       img,
-      -canvas.width / 2,
-      -canvas.height / 2,
-      canvas.width,
-      canvas.height
+      -img.naturalWidth / 2,
+      -img.naturalHeight / 2,
+      img.naturalWidth,
+      img.naturalHeight
     );
 
     // Tạo link tải xuống
