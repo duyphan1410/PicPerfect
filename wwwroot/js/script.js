@@ -412,11 +412,84 @@ const updateImage = async () => {
     const result = await response.json();
     if (result.success) {
       showToast(result.message);
-      // Cập nhật lại ảnh hiện tại với URL mới
-      if (result.imageUrl) {
-        previewImg.src = result.imageUrl;
+
+      // Kiểm tra xem có imageId trong URL không
+      const params = new URLSearchParams(window.location.search);
+      const imageIdFromUrl = params.get("imageId");
+
+      if (imageIdFromUrl) {
+        // Nếu có imageId trong URL, tải lại trang
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        // Nếu không có imageId trong URL (từ trang home), sử dụng cách tiếp cận khác
+        if (result.imageUrl) {
+          // Lưu lại các thông số chỉnh sửa hiện tại
+          const currentBrightness = brightness;
+          const currentSaturation = saturation;
+          const currentInversion = inversion;
+          const currentGrayscale = grayscale;
+          const currentRotate = rotate;
+          const currentFlipHorizontal = flipHorizontal;
+          const currentFlipVertical = flipVertical;
+
+          // Tạo một ảnh mới để load ảnh đã cập nhật
+          const updatedImg = new Image();
+          updatedImg.crossOrigin = "anonymous";
+
+          // Đợi ảnh mới load xong
+          updatedImg.onload = () => {
+            // Tạo canvas mới để vẽ ảnh đã cập nhật với các hiệu ứng
+            const updatedCanvas = document.createElement("canvas");
+            const updatedCtx = updatedCanvas.getContext("2d");
+
+            // Điều chỉnh kích thước canvas dựa trên góc xoay
+            if (
+              Math.abs(currentRotate) === 90 ||
+              Math.abs(currentRotate) === 270
+            ) {
+              updatedCanvas.width = updatedImg.naturalHeight;
+              updatedCanvas.height = updatedImg.naturalWidth;
+            } else {
+              updatedCanvas.width = updatedImg.naturalWidth;
+              updatedCanvas.height = updatedImg.naturalHeight;
+            }
+
+            // Áp dụng lại các hiệu ứng
+            updatedCtx.filter = `brightness(${currentBrightness}%) saturate(${currentSaturation}%) invert(${currentInversion}%) grayscale(${currentGrayscale}%)`;
+            updatedCtx.translate(
+              updatedCanvas.width / 2,
+              updatedCanvas.height / 2
+            );
+            if (currentRotate !== 0) {
+              updatedCtx.rotate((currentRotate * Math.PI) / 180);
+            }
+            updatedCtx.scale(currentFlipHorizontal, currentFlipVertical);
+            updatedCtx.drawImage(
+              updatedImg,
+              -updatedImg.naturalWidth / 2,
+              -updatedImg.naturalHeight / 2,
+              updatedImg.naturalWidth,
+              updatedImg.naturalHeight
+            );
+
+            // Cập nhật ảnh hiển thị với ảnh đã xử lý
+            previewImg.src = updatedCanvas.toDataURL("image/jpeg", 0.95);
+
+            // Đợi ảnh hiển thị load xong
+            previewImg.onload = () => {
+              // Áp dụng lại các hiệu ứng
+              applyFilter();
+            };
+          };
+
+          updatedImg.src = result.imageUrl + "?t=" + new Date().getTime(); // Thêm timestamp để tránh cache
+        }
+
+        // Cập nhật danh sách ảnh đã lưu
+        loadSavedImages();
       }
-      loadSavedImages();
     } else {
       showToast(result.message, "danger");
     }
