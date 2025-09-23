@@ -82,3 +82,7 @@ docker-compose.override.yml
 # Test results
 TestResults/
 .qodo
+
+appsettings.json
+appsettings.*.json
+*.config
