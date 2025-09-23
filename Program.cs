@@ -4,19 +4,26 @@ using CloudinaryDotNet;
 using PicPerfect.Helpers;
 using PicPerfect.Interface;
 using PicPerfect.Services;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load .env file
+Env.Load();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+// Configure Cloudinary settings from configuration + environment variables
+builder.Services.Configure<CloudinarySetting>(
+    builder.Configuration.GetSection("CloudinarySetting"));
 
+// Register PhotoServices with IOptions pattern
 builder.Services.AddScoped<IPhotoServices, PhotoServices>();
-builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
 
+// Configure session
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(20);
@@ -24,10 +31,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(
-    builder.Configuration.GetConnectionString("localDb")));
-
-
+// Configure database
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("localDb")));
 
 var app = builder.Build();
 
@@ -35,7 +41,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -43,10 +48,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication
-    ();
-
-
+app.UseAuthentication();
 app.UseSession();
 app.UseAuthorization();
 
@@ -55,22 +57,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-ConfigureCloudinary(builder);
-void ConfigureCloudinary(WebApplicationBuilder builder)
-{
-    // Thay thế 'YOUR_CLOUD_NAME', 'YOUR_API_KEY', và 'YOUR_API_SECRET' bằng thông tin tài khoản Cloudinary của bạn
-    Account account = new Account(
-        "dkpxtu0ur",
-        "617718861855797",
-        "OVNP1q0mBO2XPtnkW9Q7077CF8M");
-
-    Cloudinary cloudinary = new Cloudinary(account);
-
-    // Cấu hình các thiết lập khác cho Cloudinary nếu cần
-    // Ví dụ:
-    // cloudinary.Secure = true;
-
-    // Đăng ký Cloudinary vào dịch vụ của ứng dụng
-    builder.Services.AddSingleton(cloudinary);
-}

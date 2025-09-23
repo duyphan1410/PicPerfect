@@ -73,6 +73,8 @@ _ReSharper*/
 # Docker
 docker-compose.override.yml
 .env
+.env.local
+.env.production
 
 # Temporary files
 *.tmp
